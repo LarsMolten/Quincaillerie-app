@@ -1,0 +1,17 @@
+/* Police Inter variable, hébergée localement (aucun CDN) */
+@import '@fontsource-variable/inter';
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* Les jetons de couleur et le mode sombre seront définis avec le design system */
+@theme {
+    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Chiffres à chasse fixe pour les montants et les quantités */
+@utility chiffres {
+    font-variant-numeric: tabular-nums;
+}
