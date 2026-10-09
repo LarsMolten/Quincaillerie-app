@@ -43,12 +43,12 @@ class Navigation
             ['titre' => 'Achats', 'entrees' => [
                 $e('Nouvel achat', 'circle-plus', 'achats.create', '/achats/nouveau', 'achats.creer'),
                 $e('Liste des achats', 'truck', 'achats.index', '/achats', 'achats.voir'),
-                $e('Fournisseurs', 'store', 'fournisseurs.index', '/fournisseurs', 'fournisseurs.gerer'),
+                $e('Fournisseurs', 'store', 'fournisseurs.index', '/fournisseurs', 'fournisseurs.gerer', false),
                 $e('Retours fournisseurs', 'undo-2', 'retours.fournisseurs', '/retours/fournisseurs', 'retours.gerer'),
             ]],
             ['titre' => 'Clients', 'entrees' => [
-                $e('Clients', 'users', 'clients.index', '/clients', 'clients.gerer'),
-                $e('Crédits', 'hand-coins', 'clients.credits', '/clients/credits', 'clients.gerer'),
+                $e('Clients', 'users', 'clients.index', '/clients', 'clients.gerer', false),
+                $e('Crédits', 'hand-coins', 'clients.credits', '/clients/credits', 'clients.gerer', false),
                 $e('Historique', 'history', 'clients.historique', '/clients/historique', 'clients.gerer'),
             ]],
             ['titre' => 'Finances', 'entrees' => [

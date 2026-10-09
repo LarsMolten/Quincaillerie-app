@@ -1,0 +1,203 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\StatutVente;
+use App\Http\Requests\ClientRequest;
+use App\Models\Client;
+use App\Models\Paiement;
+use App\Models\Vente;
+use App\Services\JournalService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
+
+/**
+ * Clients (droit clients.gerer) : liste, panneau de saisie, fiche avec créance et plafond, page Crédits.
+ * Le « Client comptoir » (ventes anonymes) ne peut être ni supprimé, ni désactivé, ni renommé,
+ * et n'a jamais de crédit (CLAUDE.md §5.8).
+ */
+class ClientController extends Controller
+{
+    public function __construct(private readonly JournalService $journal) {}
+
+    public function index(Request $requete): View
+    {
+        $recherche = trim((string) $requete->query('recherche'));
+        $statut = in_array($requete->query('statut'), ['inactifs', 'tous'], true) ? $requete->query('statut') : 'actifs';
+        $tri = $requete->query('tri') === 'creance' ? 'creance' : 'nom';
+        $ordre = $requete->query('ordre') === 'desc' ? 'desc' : 'asc';
+
+        $clients = Client::query()
+            ->withSum(['ventes as creance' => fn ($q) => $q->where('statut', StatutVente::Validee)], 'reste_a_payer')
+            ->withCount('ventes') // un client sans vente peut être supprimé
+            ->when($recherche !== '', fn ($q) => $q->where(fn ($q) => $q
+                ->where('nom', 'like', "%{$recherche}%")
+                ->orWhere('telephone', 'like', "%{$recherche}%")
+                ->orWhere('email', 'like', "%{$recherche}%")))
+            ->when($statut === 'actifs', fn ($q) => $q->where('actif', true))
+            ->when($statut === 'inactifs', fn ($q) => $q->where('actif', false))
+            // Le Client comptoir est épinglé en tête
+            ->orderByRaw('CASE WHEN nom = ? THEN 0 ELSE 1 END', [Client::COMPTOIR])
+            ->orderBy($tri, $ordre)
+            ->orderBy('nom')
+            ->paginate(15)
+            ->withQueryString();
+
+        $donnees = compact('clients', 'recherche', 'statut');
+
+        if ($requete->header('X-Fragment') === 'liste') {
+            return view('clients._liste', $donnees);
+        }
+
+        return view('clients.index', [
+            ...$donnees,
+            'synthese' => [
+                'actifs' => Client::where('actif', true)->count(),
+                'creance' => (float) Vente::validees()->sum('reste_a_payer'),
+                'debiteurs' => Vente::validees()->where('reste_a_payer', '>', 0)->distinct()->count('client_id'),
+            ],
+        ]);
+    }
+
+    public function show(Client $client): View
+    {
+        $creance = $client->creance_totale;
+        $plafond = $client->plafond_credit !== null && ! $client->estComptoir() ? (float) $client->plafond_credit : null;
+        $ventesValidees = $client->ventes()->validees();
+
+        return view('clients.show', [
+            'client' => $client,
+            'creance' => $creance,
+            'plafond' => $plafond,
+            'utilisation' => $plafond ? $creance / $plafond * 100 : null,
+            'ventesImpayees' => (clone $ventesValidees)->where('reste_a_payer', '>', 0)->count(),
+            'totalAchats' => (float) (clone $ventesValidees)->sum('total'),
+            'nombreVentes' => (clone $ventesValidees)->count(),
+            'ventes' => $client->ventes()->with('facture')->latest('date_vente')->latest('id')->paginate(10, ['*'], 'page_ventes'),
+            'paiements' => Paiement::whereHasMorph('payable', [Vente::class], fn ($q) => $q->where('client_id', $client->id))
+                ->with('payable', 'utilisateur')
+                ->latest('date_paiement')
+                ->limit(15)
+                ->get(),
+        ]);
+    }
+
+    /** Clients ayant une créance, de la plus forte à la plus faible, avec l'ancienneté de la plus vieille dette. */
+    public function credits(Request $requete): View
+    {
+        $recherche = trim((string) $requete->query('recherche'));
+        $anciennete = in_array($requete->query('anciennete'), ['recente', 'moyenne', 'ancienne'], true) ? $requete->query('anciennete') : null;
+        $aujourdhui = today();
+
+        $impayees = fn ($q) => $q->where('statut', StatutVente::Validee)->where('reste_a_payer', '>', 0);
+
+        $requeteCredits = Client::query()
+            ->where('nom', '!=', Client::COMPTOIR)
+            ->whereHas('ventes', $impayees)
+            ->withSum(['ventes as creance' => $impayees], 'reste_a_payer')
+            ->withCount(['ventes as ventes_impayees' => $impayees])
+            ->addSelect(['plus_ancienne' => Vente::selectRaw('MIN(date_vente)')
+                ->whereColumn('client_id', 'clients.id')
+                ->where('statut', StatutVente::Validee)
+                ->where('reste_a_payer', '>', 0)])
+            ->when($recherche !== '', fn ($q) => $q->where(fn ($q) => $q
+                ->where('nom', 'like', "%{$recherche}%")
+                ->orWhere('telephone', 'like', "%{$recherche}%")));
+
+        // Liste complète des débiteurs (quelques centaines au plus) : l'ancienneté en jours
+        // et son filtre sont calculés ici, puis la liste triée est paginée
+        $clients = $requeteCredits->orderByDesc('creance')->orderBy('nom')->get()
+            ->each(function (Client $client) use ($aujourdhui) {
+                $client->jours = (int) Carbon::parse($client->plus_ancienne)->startOfDay()->diffInDays($aujourdhui);
+            })
+            ->when($anciennete, fn ($liste) => $liste->filter(fn (Client $client) => self::tranche($client->jours) === $anciennete))
+            ->values();
+
+        $synthese = [
+            'total' => (float) $clients->sum('creance'),
+            'debiteurs' => $clients->count(),
+            'plusDe60' => (float) $clients->filter(fn ($c) => $c->jours > 60)->sum('creance'),
+        ];
+
+        // Pagination manuelle : l'ancienneté est calculée sur la liste triée
+        $page = max(1, $requete->integer('page', 1));
+        $credits = new LengthAwarePaginator(
+            $clients->forPage($page, 15)->values(), $clients->count(), 15, $page,
+            ['path' => $requete->url(), 'query' => $requete->query()],
+        );
+
+        $donnees = compact('credits', 'recherche', 'anciennete');
+
+        if ($requete->header('X-Fragment') === 'liste') {
+            return view('clients._liste-credits', $donnees);
+        }
+
+        return view('clients.credits', [...$donnees, 'synthese' => $synthese]);
+    }
+
+    /** Tranche d'ancienneté : moins de 30 jours, 30 à 60 jours, plus de 60 jours. */
+    public static function tranche(int $jours): string
+    {
+        return match (true) {
+            $jours < 30 => 'recente',
+            $jours <= 60 => 'moyenne',
+            default => 'ancienne',
+        };
+    }
+
+    public function store(ClientRequest $requete): RedirectResponse
+    {
+        $client = Client::create($requete->validated());
+
+        return to_route('clients.index')->with('succes', "Client « {$client->nom} » créé.");
+    }
+
+    public function update(ClientRequest $requete, Client $client): RedirectResponse
+    {
+        $donnees = $requete->validated();
+
+        // Le comptoir garde son nom et n'a jamais de crédit
+        if ($client->estComptoir()) {
+            if ($donnees['nom'] !== Client::COMPTOIR || $donnees['plafond_credit'] !== null) {
+                return back()->withInput()->with('erreur', 'Le « Client comptoir » ne peut être ni renommé ni recevoir de plafond de crédit.');
+            }
+        }
+
+        $client->update($donnees);
+
+        return back()->with('succes', "Client « {$client->nom} » modifié.");
+    }
+
+    public function statut(Client $client): RedirectResponse
+    {
+        if ($client->estComptoir()) {
+            return back()->with('erreur', 'Le « Client comptoir » est toujours actif : il sert aux ventes anonymes.');
+        }
+
+        $client->update(['actif' => ! $client->actif]);
+        $this->journal->enregistrer($client->actif ? 'client.reactive' : 'client.desactive', $client, ['nom' => $client->nom]);
+
+        return back()->with('succes', $client->actif
+            ? "Client « {$client->nom} » réactivé."
+            : "Client « {$client->nom} » désactivé : il n'est plus proposé en caisse.");
+    }
+
+    public function destroy(Client $client): RedirectResponse
+    {
+        if ($client->estComptoir()) {
+            return back()->with('erreur', 'Le « Client comptoir » ne peut pas être supprimé : il sert aux ventes anonymes.');
+        }
+
+        if ($client->ventes()->exists()) {
+            return back()->with('erreur', "Le client « {$client->nom} » a des ventes enregistrées : il ne peut pas être supprimé. Désactivez-le plutôt.");
+        }
+
+        $client->delete();
+        $this->journal->enregistrer('client.supprime', $client, ['nom' => $client->nom]);
+
+        return to_route('clients.index')->with('succes', "Client « {$client->nom} » supprimé.");
+    }
+}

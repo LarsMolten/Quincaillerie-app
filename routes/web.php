@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Auth\ConnexionController;
 use App\Http\Controllers\CategorieController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DesignSystemeController;
+use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\PreferenceThemeController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\UniteController;
@@ -43,6 +45,22 @@ Route::middleware('auth')->group(function () {
         ->middleware('droit:produits.modifier')->name('produits.update');
     Route::patch('/produits/{produit}/statut', [ProduitController::class, 'statut'])
         ->middleware('droit:produits.desactiver')->name('produits.statut');
+
+    // Fournisseurs
+    Route::middleware('droit:fournisseurs.gerer')->group(function () {
+        Route::resource('fournisseurs', FournisseurController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+            ->where(['fournisseur' => '[0-9]+']);
+        Route::patch('/fournisseurs/{fournisseur}/statut', [FournisseurController::class, 'statut'])->name('fournisseurs.statut');
+    });
+
+    // Clients (« Crédits » déclaré avant /clients/{client})
+    Route::middleware('droit:clients.gerer')->group(function () {
+        Route::get('/clients/credits', [ClientController::class, 'credits'])->name('clients.credits');
+        // Identifiant numérique : /clients/historique (à venir) n'est pas pris pour une fiche
+        Route::resource('clients', ClientController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+            ->where(['client' => '[0-9]+']);
+        Route::patch('/clients/{client}/statut', [ClientController::class, 'statut'])->name('clients.statut');
+    });
 
     // Catégories et unités
     Route::middleware('droit:categories.gerer')->group(function () {
