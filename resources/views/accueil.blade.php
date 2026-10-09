@@ -1,23 +1,23 @@
-{{-- Page provisoire : remplacée par le tableau de bord (prompt 20) et le layout complet (prompt 8) --}}
-@extends('layouts.base')
+{{-- Tableau de bord provisoire : remplacé au prompt 20 --}}
+@extends('layouts.app')
 
-@section('contenu')
-    <main class="mx-auto max-w-xl px-4 py-16">
-        <x-carte>
-            <x-etat-vide icone="store" :titre="'Bonjour, '.auth()->user()->nom"
-                         :texte="'Connecté en tant que '.auth()->user()->role->nom.'. Le tableau de bord arrive bientôt.'">
-                @droit('utilisateurs.gerer')
-                    <x-bouton :href="route('utilisateurs.index')" variante="secondaire" icone="users">Utilisateurs</x-bouton>
-                @enddroit
-                @if (app()->environment('local'))
-                    <x-bouton :href="route('design-systeme')" variante="secondaire" icone="layout-dashboard">Design system</x-bouton>
-                @endif
-                <form method="POST" action="{{ route('deconnexion') }}">
-                    @csrf
-                    <x-bouton variante="fantome" icone="log-out">Se déconnecter</x-bouton>
-                </form>
-            </x-etat-vide>
-            <p class="text-center text-sm text-texte-doux">Exemple de montant : <span class="chiffres font-medium text-texte">{{ format_ar(35000) }}</span></p>
-        </x-carte>
-    </main>
+@section('titre', 'Tableau de bord')
+
+@section('page')
+    <x-entete-page
+        :titre="'Bonjour, '.auth()->user()->prenom"
+        :description="ucfirst(now()->translatedFormat('l j F Y'))"
+    >
+        <x-slot:actions>
+            @droit('ventes.creer')
+                <x-bouton :href="route('ventes.create')" icone="shopping-cart">Nouvelle vente</x-bouton>
+            @enddroit
+        </x-slot:actions>
+    </x-entete-page>
+
+    <x-carte>
+        <x-etat-vide icone="layout-dashboard" titre="Tableau de bord bientôt disponible"
+                     :texte="'Connecté en tant que '.auth()->user()->role->nom.'. Les indicateurs de ventes, de stock et de finances arrivent prochainement.'" />
+        <p class="text-center text-sm text-texte-doux">Exemple de montant : <span class="chiffres font-medium text-texte">{{ format_ar(35000) }}</span></p>
+    </x-carte>
 @endsection

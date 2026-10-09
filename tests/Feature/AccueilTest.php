@@ -17,7 +17,7 @@ class AccueilTest extends TestCase
         $this->actingAs(Utilisateur::factory()->create(['nom' => 'Rakoto Hery']))
             ->get(route('accueil'))
             ->assertOk()
-            ->assertSee('Bonjour, Rakoto Hery')
+            ->assertSee('Bonjour, Hery')
             ->assertSee('lang="fr"', false)
             ->assertSee("35\u{00A0}000\u{00A0}Ar");
     }

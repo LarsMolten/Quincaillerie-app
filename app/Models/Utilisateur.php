@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PreferenceTheme;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -71,6 +72,22 @@ class Utilisateur extends Authenticatable
     public function estAdministrateur(): bool
     {
         return (bool) $this->role?->estAdministrateur();
+    }
+
+    /** Initiales pour l'avatar : « Rakotonirina Andry » → « RA ». */
+    protected function initiales(): Attribute
+    {
+        return Attribute::get(fn (): string => collect(preg_split('/\s+/', trim($this->nom)))
+            ->filter()
+            ->take(2)
+            ->map(fn (string $mot) => mb_strtoupper(mb_substr($mot, 0, 1)))
+            ->implode(''));
+    }
+
+    /** Prénom affiché dans les salutations (dernier mot du nom malgache : « Rakotonirina Andry » → « Andry »). */
+    protected function prenom(): Attribute
+    {
+        return Attribute::get(fn (): string => collect(preg_split('/\s+/', trim($this->nom)))->filter()->last() ?? $this->nom);
     }
 
     /**

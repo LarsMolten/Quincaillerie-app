@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ConnexionController;
 use App\Http\Controllers\DesignSystemeController;
 use App\Http\Controllers\PreferenceThemeController;
+use App\Support\Navigation;
 use Illuminate\Support\Facades\Route;
 
 // Connexion (visiteurs uniquement)
@@ -24,10 +25,12 @@ Route::middleware('auth')->group(function () {
     // Préférence personnelle de l'utilisateur connecté : aucun droit particulier requis
     Route::patch('/preferences/theme', PreferenceThemeController::class)->name('preferences.theme');
 
-    // Gestion des utilisateurs : page provisoire jusqu'au prompt 22
-    Route::view('/utilisateurs', 'utilisateurs.index')
-        ->middleware('droit:utilisateurs.gerer')
-        ->name('utilisateurs.index');
+    // Modules pas encore implémentés : page « Bientôt disponible », protégée par le droit du module
+    foreach (Navigation::aVenir() as $entree) {
+        Route::view($entree['url'], 'bientot-disponible')
+            ->middleware('droit:'.$entree['droit'])
+            ->name($entree['route']);
+    }
 });
 
 // Vitrine des composants : environnement local uniquement (404 ailleurs)

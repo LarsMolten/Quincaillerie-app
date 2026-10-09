@@ -30,7 +30,8 @@ export default function (Alpine) {
             this.$nextTick(() => {
                 this.positionner();
                 const elements = this.elements();
-                (focus === 'dernier' ? elements.at(-1) : elements[0])?.focus();
+                // Menu sans élément (ex. aucune notification) : le panneau lui-même reçoit le focus
+                ((focus === 'dernier' ? elements.at(-1) : elements[0]) ?? this.$refs.liste).focus();
             });
         },
 

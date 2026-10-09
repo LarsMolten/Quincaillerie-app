@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs';
 import bouton from './composants/bouton';
+import coquille from './composants/coquille';
 import menu from './composants/menu';
 import modal from './composants/modal';
 import recherche from './composants/recherche';
@@ -14,7 +15,17 @@ document.addEventListener('alpine:init', () => {
     menu(Alpine);
     recherche(Alpine);
     bouton(Alpine);
+    coquille(Alpine);
 });
 
 window.Alpine = Alpine;
 Alpine.start();
+
+// PWA : service worker limité aux ressources statiques (jamais les données métier)
+if ('serviceWorker' in navigator && window.isSecureContext) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+            // Sans service worker, l'application fonctionne normalement (en ligne)
+        });
+    });
+}

@@ -12,6 +12,15 @@
     @auth
         <meta name="preference-theme-url" content="{{ route('preferences.theme') }}">
     @endauth
+    {{-- PWA : application installable (manifest + service worker limité aux ressources statiques) --}}
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icones/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
+    <meta name="theme-color" content="#f9fafc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0c1016" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="{{ config('app.name') }}">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>{{ trim($__env->yieldContent('titre')) ? trim($__env->yieldContent('titre')).' · ' : '' }}{{ config('app.name') }}</title>
 
     @include('partials.script-theme')

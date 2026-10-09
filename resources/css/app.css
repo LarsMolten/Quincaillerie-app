@@ -18,6 +18,9 @@
  */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Barre latérale repliée (icônes seules), posée sur <html> par le script du head : lg:barre-repliee:… */
+@custom-variant barre-repliee (&:where([data-barre='repliee'] *));
+
 @theme {
     /* Seuls les jetons ci-dessous existent : aucune couleur Tailwind par défaut dans les vues */
     --color-*: initial;
@@ -56,6 +59,16 @@
     --animate-apparition: apparition 180ms ease-out both;
     --animate-glissement: glissement 200ms ease-out both;
     --animate-squelette: squelette 1.4s ease-in-out infinite;
+    --animate-tiroir: tiroir 200ms ease-out both;
+
+    @keyframes tiroir {
+        from {
+            transform: translateX(-100%);
+        }
+        to {
+            transform: translateX(0);
+        }
+    }
 
     @keyframes apparition {
         from {
@@ -268,6 +281,15 @@
 ::view-transition-old(root),
 ::view-transition-new(root) {
     animation-duration: 180ms;
+}
+
+/* La barre latérale et l'en-tête restent fixes : seul le contenu change d'une page à l'autre */
+.transition-barre {
+    view-transition-name: barre-laterale;
+}
+
+.transition-entete {
+    view-transition-name: entete;
 }
 
 /* Réduire les animations : tout mouvement est désactivé */

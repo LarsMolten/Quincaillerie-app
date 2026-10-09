@@ -1,0 +1,20 @@
+{
+    "name": "Quincaillerie",
+    "short_name": "Quincaillerie",
+    "description": "Gestion de quincaillerie : stock, caisse, achats, clients et finances.",
+    "lang": "fr",
+    "dir": "ltr",
+    "id": "/",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "theme_color": "#fe7802",
+    "background_color": "#f9fafc",
+    "categories": ["business", "productivity"],
+    "icons": [
+        { "src": "/icones/app-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "/icones/app-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "/icones/app-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ]
+}
