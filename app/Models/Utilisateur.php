@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 /**
  * Compte de connexion à l'application (remplace le modèle User de Laravel).
- * Les relations (rôle, droits) sont ajoutées avec les autres modèles.
  */
 class Utilisateur extends Authenticatable
 {
-    use Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes;
 
     protected $table = 'utilisateurs';
 
@@ -37,5 +39,53 @@ class Utilisateur extends Authenticatable
             'password' => 'hashed',
             'actif' => 'boolean',
         ];
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function ventes(): HasMany
+    {
+        return $this->hasMany(Vente::class, 'utilisateur_id');
+    }
+
+    public function achats(): HasMany
+    {
+        return $this->hasMany(Achat::class, 'utilisateur_id');
+    }
+
+    public function mouvementsStock(): HasMany
+    {
+        return $this->hasMany(MouvementStock::class, 'utilisateur_id');
+    }
+
+    public function activites(): HasMany
+    {
+        return $this->hasMany(JournalActivite::class, 'utilisateur_id');
+    }
+
+    public function estAdministrateur(): bool
+    {
+        return (bool) $this->role?->estAdministrateur();
+    }
+
+    /**
+     * Indique si l'utilisateur possède le droit demandé (ex. « ventes.creer »).
+     * Un compte inactif n'a aucun droit ; l'Administrateur les a tous.
+     */
+    public function aDroit(string $code): bool
+    {
+        if (! $this->actif || ! $this->role) {
+            return false;
+        }
+
+        if ($this->role->estAdministrateur()) {
+            return true;
+        }
+
+        // Les droits du rôle sont chargés une seule fois par requête
+        return $this->role->droits->contains('code', $code);
     }
 }
