@@ -27,3 +27,6 @@ Homestead.yaml
 Thumbs.db
 /storage/debugbar
 /public/fonts-manifest.json
+
+# Réglages locaux de Claude Code (permissions propres à ce poste)
+/.claude/settings.local.json
