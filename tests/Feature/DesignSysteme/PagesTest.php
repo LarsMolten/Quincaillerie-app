@@ -37,7 +37,7 @@ class PagesTest extends TestCase
 
     public function test_le_script_de_theme_est_dans_le_head_avant_les_styles(): void
     {
-        $page = $this->get(route('accueil'))->assertOk()->getContent();
+        $page = $this->get(route('connexion'))->assertOk()->getContent();
 
         $this->assertLessThan(strpos($page, '</head>'), strpos($page, "document.documentElement.classList.toggle('dark'"));
         $this->assertStringContainsString('var mode = null;', $page);
@@ -55,7 +55,8 @@ class PagesTest extends TestCase
 
     public function test_les_messages_flash_deviennent_des_toasts(): void
     {
-        $this->withSession(['succes' => 'Produit enregistré.', 'erreur' => 'Stock insuffisant.'])
+        $this->actingAs(Utilisateur::factory()->create())
+            ->withSession(['succes' => 'Produit enregistré.', 'erreur' => 'Stock insuffisant.'])
             ->get(route('accueil'))
             ->assertSee('<script type="application/json" id="toasts-flash">', false)
             ->assertSee('{"type":"succes","message":"Produit enregistré."}', false)

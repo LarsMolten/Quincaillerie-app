@@ -10,6 +10,7 @@
     - icone   : icône Lucide à gauche
     - montant : true pour aligner à droite en chiffres tabulaires
     Les autres attributs (placeholder, min, step, inputmode, autofocus…) vont sur l'<input>.
+    Slot nommé « action » : bouton interactif à droite du champ (ex. œil du mot de passe).
 
     Exemple : <x-champ nom="prix_vente" label="Prix de vente" type="number" suffixe="Ar" montant requis />
 --}}
@@ -64,6 +65,10 @@
                 'chiffres text-right' => $montant,
             ]) }}
         >
+
+        @isset($action)
+            {{ $action }}
+        @endisset
 
         @if ($suffixe)
             <span class="flex items-center border-l border-bordure bg-fond px-3 text-sm font-medium text-texte-doux" aria-hidden="true">

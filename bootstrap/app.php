@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\VerifierDroit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Route::middleware('droit:ventes.creer')
+        $middleware->alias(['droit' => VerifierDroit::class]);
+
+        $middleware->redirectGuestsTo(fn () => route('connexion'));
+        $middleware->redirectUsersTo(fn () => route('accueil'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

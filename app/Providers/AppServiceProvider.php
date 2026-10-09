@@ -15,6 +15,8 @@ use App\Models\Utilisateur;
 use App\Models\Vente;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,6 +34,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Droits « module.action » : l'Administrateur actif a tout, les autres selon leur rôle.
+        // Toute autre capacité (policies futures) est laissée aux règles classiques.
+        Gate::before(function (Utilisateur $utilisateur, string $capacite) {
+            if ($utilisateur->actif && $utilisateur->estAdministrateur()) {
+                return true;
+            }
+
+            return preg_match('/^[a-z_]+\.[a-z_]+$/', $capacite) ? $utilisateur->aDroit($capacite) : null;
+        });
+
+        // @droit('ventes.remise') … @enddroit
+        Blade::if('droit', fn (string $code) => (bool) auth()->user()?->can($code));
+
         // Pagination au design du thème, en français
         Paginator::defaultView('vendor.pagination.tailwind');
         Paginator::defaultSimpleView('vendor.pagination.simple-tailwind');
