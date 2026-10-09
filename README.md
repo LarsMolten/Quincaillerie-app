@@ -37,8 +37,16 @@ Créer la base de données en utf8mb4 :
 CREATE DATABASE quincaillerie CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
+Définir aussi le mot de passe du compte administrateur (obligatoire, jamais dans le code) :
+
+```dotenv
+ADMIN_EMAIL=admin@quincaillerie.test
+ADMIN_PASSWORD=un-mot-de-passe-solide
+SEED_DEMO=false   # true pour ajouter les données de démonstration (local uniquement)
+```
+
 ```bash
-# 3. Tables et données de base
+# 3. Tables et données de base (rôles, droits, administrateur, catégories, unités, paramètres, Client comptoir)
 php artisan migrate --seed
 
 # 4. Ressources front (Tailwind CSS v4, Alpine.js, police Inter locale)
@@ -49,6 +57,17 @@ php artisan serve
 ```
 
 L'application est alors disponible sur http://localhost:8000.
+
+## Données de démonstration
+
+Environ 65 produits de quincaillerie, 10 fournisseurs, 30 clients, ainsi que les ventes, achats et dépenses des 30 derniers jours :
+
+```bash
+php artisan migrate:fresh --seed                # avec SEED_DEMO=true dans .env
+php artisan db:seed --class=DemoSeeder          # ou séparément, après les données de base
+```
+
+Comptes créés (même mot de passe que `ADMIN_PASSWORD`) : `responsable@`, `vendeur@` et `magasinier@quincaillerie.test`.
 
 ## Développement
 

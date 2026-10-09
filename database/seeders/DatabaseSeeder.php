@@ -7,11 +7,24 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Remplit la base avec les données de base (rôles, droits, administrateur…).
-     * Les seeders sont ajoutés au prompt 5.
+     * Données de base indispensables au fonctionnement de l'application.
+     * Les seeders sont idempotents : on peut les relancer sans créer de doublons.
      */
     public function run(): void
     {
-        //
+        $this->call([
+            RoleSeeder::class,
+            DroitSeeder::class,
+            AdministrateurSeeder::class,
+            CategorieSeeder::class,
+            UniteSeeder::class,
+            ParametreSeeder::class,
+            ClientComptoirSeeder::class,
+        ]);
+
+        // Données de démonstration : SEED_DEMO=true dans .env (jamais en production)
+        if (config('quincaillerie.demo') && ! app()->isProduction()) {
+            $this->call(DemoSeeder::class);
+        }
     }
 }
