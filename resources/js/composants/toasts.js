@@ -4,6 +4,7 @@
  * - Alpine : $dispatch('toast', { type: 'erreur', message: '…' })
  * - Laravel : session()->flash('succes' | 'erreur' | 'info', '…'), lu au chargement de la page ;
  *   lien facultatif : ->with('toast_lien', ['libelle' => …, 'url' => …, 'nouvelOnglet' => true]).
+ * - Action : window.toast('info', 'Ligne retirée.', 5000, { libelle: 'Annuler', action: () => … }) (bouton qui ferme le toast).
  */
 const DUREE_PAR_DEFAUT = 5000;
 const MAXIMUM = 5;
@@ -16,8 +17,8 @@ export default function (Alpine) {
 
         ajouter(type, message, duree = DUREE_PAR_DEFAUT, lien = null) {
             const id = ++this.compteur;
-            // Un toast avec lien reste affiché plus longtemps, pour laisser le temps de cliquer
-            const delai = lien ? Math.max(duree, 9000) : duree;
+            // Un toast avec lien reste affiché plus longtemps, pour laisser le temps de cliquer (une action garde sa durée)
+            const delai = lien?.url ? Math.max(duree, 9000) : duree;
             this.liste.push({ id, type, message, lien, duree: delai, restant: delai, debut: 0 });
 
             // Empilement limité : les plus anciens disparaissent

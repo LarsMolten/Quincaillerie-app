@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs';
 import bouton from './composants/bouton';
+import caisse from './composants/caisse';
 import coquille from './composants/coquille';
 import formulaireProduit from './composants/formulaire-produit';
 import listeDynamique from './composants/liste-dynamique';
@@ -22,6 +23,7 @@ document.addEventListener('alpine:init', () => {
     listeDynamique(Alpine);
     formulaireProduit(Alpine);
     saisieAchat(Alpine);
+    caisse(Alpine);
 });
 
 window.Alpine = Alpine;

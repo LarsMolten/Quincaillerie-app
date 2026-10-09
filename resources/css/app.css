@@ -61,6 +61,30 @@
     --animate-squelette: squelette 1.4s ease-in-out infinite;
     --animate-tiroir: tiroir 200ms ease-out both;
     --animate-panneau: panneau 200ms ease-out both;
+    --animate-pulsation: pulsation 200ms ease-out;
+    --animate-coche: coche 200ms ease-out both;
+
+    /* Total de la caisse : léger battement quand la valeur change */
+    @keyframes pulsation {
+        from {
+            transform: scale(1.04);
+        }
+        to {
+            transform: scale(1);
+        }
+    }
+
+    /* Écran de réussite de la caisse */
+    @keyframes coche {
+        from {
+            opacity: 0;
+            transform: scale(0.6);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
 
     @keyframes panneau {
         from {

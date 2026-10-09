@@ -6,6 +6,7 @@
     - Laravel : return back()->with('succes', 'Produit enregistré.');
     - Alpine  : $dispatch('toast', { type: 'erreur', message: 'Stock insuffisant.' })
     - JS      : window.toast('info', 'Synchronisation terminée.')
+    - Action  : window.toast('info', 'Ligne retirée.', 5000, { libelle: 'Annuler', action: () => … })
 --}}
 <div
     x-data
@@ -30,7 +31,13 @@
                 </span>
                 <div class="flex-1 text-sm">
                     <p class="font-medium text-texte" x-text="toast.message"></p>
-                    <template x-if="toast.lien">
+                    <template x-if="toast.lien?.action">
+                        <button type="button" x-on:click="toast.lien.action(); $store.toasts.fermer(toast.id)"
+                                class="mt-1 inline-flex min-h-8 items-center gap-1 font-semibold text-lien underline-offset-4 hover:underline pointer-coarse:min-h-11">
+                            <x-icone nom="undo-2" taille="size-3.5" /> <span x-text="toast.lien.libelle"></span>
+                        </button>
+                    </template>
+                    <template x-if="toast.lien?.url">
                         <a x-bind:href="toast.lien.url" x-bind:target="toast.lien.nouvelOnglet ? '_blank' : null"
                            class="mt-1 inline-flex items-center gap-1 font-semibold text-lien underline-offset-4 hover:underline">
                             <span x-text="toast.lien.libelle"></span> <x-icone nom="external-link" taille="size-3.5" />

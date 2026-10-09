@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ModePaiement;
+use App\Enums\StatutPaiement;
 use App\Enums\StatutVente;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -29,6 +30,8 @@ class Vente extends Model
         'total',
         'montant_paye',
         'reste_a_payer',
+        'montant_recu',
+        'monnaie_rendue',
         'mode_paiement',
         'statut',
         'notes',
@@ -43,6 +46,8 @@ class Vente extends Model
             'total' => 'decimal:2',
             'montant_paye' => 'decimal:2',
             'reste_a_payer' => 'decimal:2',
+            'montant_recu' => 'decimal:2',
+            'monnaie_rendue' => 'decimal:2',
             'mode_paiement' => ModePaiement::class,
             'statut' => StatutVente::class,
         ];
@@ -93,5 +98,11 @@ class Vente extends Model
     protected function estSoldee(): Attribute
     {
         return Attribute::get(fn (): bool => (float) $this->reste_a_payer <= 0);
+    }
+
+    /** Payé, Partiel ou À crédit (déduit des montants). */
+    protected function statutPaiement(): Attribute
+    {
+        return Attribute::get(fn (): StatutPaiement => StatutPaiement::de($this));
     }
 }

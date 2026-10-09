@@ -9,6 +9,7 @@ use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\PreferenceThemeController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\UniteController;
+use App\Http\Controllers\VenteController;
 use App\Support\Navigation;
 use Illuminate\Support\Facades\Route;
 
@@ -61,6 +62,21 @@ Route::middleware('auth')->group(function () {
     });
     Route::post('/achats/{achat}/annulation', [AchatController::class, 'annuler'])
         ->whereNumber('achat')->middleware('droit:achats.annuler')->name('achats.annuler');
+
+    // Ventes (caisse ; « nouvelle » déclarée avant /ventes/{vente})
+    Route::middleware('droit:ventes.creer')->group(function () {
+        Route::get('/ventes/nouvelle', [VenteController::class, 'create'])->name('ventes.create');
+        Route::post('/ventes', [VenteController::class, 'store'])->name('ventes.store');
+        Route::get('/caisse/catalogue', [VenteController::class, 'catalogue'])->name('ventes.catalogue');
+        Route::get('/caisse/clients', [VenteController::class, 'clients'])->name('ventes.clients');
+    });
+    Route::middleware('droit:ventes.voir')->group(function () {
+        Route::get('/ventes', [VenteController::class, 'index'])->name('ventes.index');
+        Route::get('/ventes/{vente}', [VenteController::class, 'show'])->whereNumber('vente')->name('ventes.show');
+        Route::get('/ventes/{vente}/ticket', [VenteController::class, 'ticket'])->whereNumber('vente')->name('ventes.ticket');
+    });
+    Route::post('/ventes/{vente}/annulation', [VenteController::class, 'annuler'])
+        ->whereNumber('vente')->middleware('droit:ventes.annuler')->name('ventes.annuler');
 
     // Fournisseurs
     Route::middleware('droit:fournisseurs.gerer')->group(function () {

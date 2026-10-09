@@ -25,6 +25,8 @@ const ICONES = [
     'wallet', 'banknote', 'credit-card', 'hand-coins', 'percent', 'chart-column', 'chart-line', 'clipboard-list',
     'archive', 'history', 'barcode', 'scan-barcode', 'calendar', 'phone', 'mail', 'map-pin', 'smartphone',
     'hammer', 'wrench',
+    // Caisse
+    'shopping-basket', 'minus', 'keyboard', 'wifi-off', 'landmark', 'circle-check-big', 'user-round-search',
 ];
 
 const ATTRIBUTS = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
