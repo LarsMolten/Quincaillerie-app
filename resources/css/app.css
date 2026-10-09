@@ -1,17 +1,289 @@
+/*
+ * Design system « moderne 2026 » — Quincaillerie
+ * Jetons sémantiques OKLCH (clair + sombre), typographie, rayons, ombres, animations.
+ * Les contrastes AA sont vérifiés automatiquement par tests/Feature/DesignSysteme/ContrastesTest.php :
+ * toute modification d'une couleur doit garder ce test au vert.
+ */
+
 /* Police Inter variable, hébergée localement (aucun CDN) */
 @import '@fontsource-variable/inter';
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
-/* Les jetons de couleur et le mode sombre seront définis avec le design system */
+/*
+ * Mode sombre piloté par la classe .dark sur <html> (posée par le script de thème).
+ * Les composants utilisent les jetons (qui changent seuls de valeur) plutôt que la variante dark:.
+ * .clair / .dark peuvent aussi forcer un mode sur une zone (page /design-systeme).
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
+    /* Seuls les jetons ci-dessous existent : aucune couleur Tailwind par défaut dans les vues */
+    --color-*: initial;
+
+    /* Accent orange sécurité */
+    --color-primaire-50: oklch(0.97 0.03 70);
+    --color-primaire-100: oklch(0.94 0.06 68);
+    --color-primaire-200: oklch(0.89 0.1 62);
+    --color-primaire-300: oklch(0.83 0.14 58);
+    --color-primaire-400: oklch(0.77 0.17 55);
+    --color-primaire-500: oklch(0.72 0.19 50);
+    --color-primaire-600: oklch(0.65 0.19 45);
+    --color-primaire-700: oklch(0.55 0.17 42);
+    --color-primaire-800: oklch(0.46 0.14 40);
+    --color-primaire-900: oklch(0.38 0.11 38);
+
+    /* Typographie */
     --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Rayons */
+    --radius-carte: 1rem;
+    --radius-controle: 0.75rem;
+
+    /* Ombres douces à deux couches (la teinte suit le mode via --ombre) */
+    --shadow-doux: 0 1px 2px var(--ombre-proche), 0 4px 14px var(--ombre-diffuse);
+    --shadow-eleve: 0 2px 6px var(--ombre-proche), 0 16px 40px var(--ombre-diffuse);
+
+    /* Espacement : base Tailwind + espacements nommés */
+    --spacing: 0.25rem;
+    --spacing-page: 1.5rem;
+    --spacing-carte: 1.25rem;
+    --spacing-cible: 2.75rem; /* 44 px : cible tactile minimale */
+
+    /* Animations (150 à 200 ms) */
+    --animate-apparition: apparition 180ms ease-out both;
+    --animate-glissement: glissement 200ms ease-out both;
+    --animate-squelette: squelette 1.4s ease-in-out infinite;
+
+    @keyframes apparition {
+        from {
+            opacity: 0;
+            transform: scale(0.97);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes glissement {
+        from {
+            opacity: 0;
+            transform: translateY(0.5rem);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes squelette {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.45;
+        }
+    }
+}
+
+/*
+ * Jetons sémantiques : les utilitaires (bg-fond, text-texte…) lisent des variables brutes
+ * définies plus bas pour chaque mode. « inline » permet de forcer un mode sur une zone de la page.
+ */
+@theme inline {
+    /* Surfaces, textes, accent et couleurs sémantiques (fond doux pour les badges, texte lisible dessus) */
+    --color-fond: var(--fond);
+    --color-surface: var(--surface);
+    --color-surface-elevee: var(--surface-elevee);
+    --color-texte: var(--texte);
+    --color-texte-doux: var(--texte-doux);
+    --color-bordure: var(--bordure);
+    --color-bordure-forte: var(--bordure-forte);
+    --color-primaire: var(--primaire);
+    --color-primaire-survol: var(--primaire-survol);
+    --color-primaire-texte: var(--primaire-texte);
+    --color-primaire-doux: var(--primaire-doux);
+    --color-lien: var(--lien);
+    --color-anneau: var(--anneau);
+    --color-succes: var(--succes);
+    --color-succes-doux: var(--succes-doux);
+    --color-succes-texte: var(--succes-texte);
+    --color-alerte: var(--alerte);
+    --color-alerte-doux: var(--alerte-doux);
+    --color-alerte-texte: var(--alerte-texte);
+    --color-danger: var(--danger);
+    --color-danger-survol: var(--danger-survol);
+    --color-danger-doux: var(--danger-doux);
+    --color-danger-texte: var(--danger-texte);
+    --color-sur-danger: var(--sur-danger);
+    --color-info: var(--info);
+    --color-info-doux: var(--info-doux);
+    --color-info-texte: var(--info-texte);
+    --color-neutre: var(--neutre);
+    --color-neutre-doux: var(--neutre-doux);
+    --color-neutre-texte: var(--neutre-texte);
+}
+
+@layer base {
+    :root,
+    .clair {
+        color-scheme: light;
+        --ombre-proche: oklch(0.25 0.03 260 / 0.06);
+        --ombre-diffuse: oklch(0.25 0.03 260 / 0.07);
+
+        --fond: oklch(0.985 0.003 250);
+        --surface: oklch(1 0 0);
+        --surface-elevee: oklch(1 0 0);
+        --texte: oklch(0.21 0.03 265);
+        --texte-doux: oklch(0.47 0.03 257);
+        --bordure: oklch(0.92 0.01 255);
+        --bordure-forte: oklch(0.62 0.02 257);
+        --primaire: oklch(0.72 0.19 50);
+        --primaire-survol: oklch(0.68 0.19 48);
+        --primaire-texte: oklch(0.21 0.03 265);
+        --primaire-doux: oklch(0.97 0.03 70);
+        --lien: oklch(0.5 0.15 42);
+        --anneau: oklch(0.6 0.18 45);
+        --succes: oklch(0.6 0.15 155);
+        --succes-doux: oklch(0.95 0.045 155);
+        --succes-texte: oklch(0.42 0.1 155);
+        --alerte: oklch(0.75 0.16 75);
+        --alerte-doux: oklch(0.96 0.06 85);
+        --alerte-texte: oklch(0.46 0.1 60);
+        --danger: oklch(0.55 0.2 27);
+        --danger-survol: oklch(0.5 0.19 27);
+        --danger-doux: oklch(0.95 0.03 20);
+        --danger-texte: oklch(0.47 0.17 27);
+        --sur-danger: oklch(1 0 0);
+        --info: oklch(0.6 0.15 245);
+        --info-doux: oklch(0.95 0.03 245);
+        --info-texte: oklch(0.45 0.13 250);
+        --neutre: oklch(0.6 0.02 257);
+        --neutre-doux: oklch(0.95 0.006 257);
+        --neutre-texte: oklch(0.42 0.025 257);
+    }
+
+    /* Mode sombre : fond quasi noir bleuté, surfaces plus claires, accent plus lumineux */
+    .dark {
+        color-scheme: dark;
+        --ombre-proche: oklch(0 0 0 / 0.35);
+        --ombre-diffuse: oklch(0 0 0 / 0.45);
+
+        --fond: oklch(0.17 0.015 260);
+        --surface: oklch(0.21 0.016 260);
+        --surface-elevee: oklch(0.25 0.017 260);
+        --texte: oklch(0.96 0.005 260);
+        --texte-doux: oklch(0.76 0.02 260);
+        --bordure: oklch(0.3 0.015 260);
+        --bordure-forte: oklch(0.56 0.02 260);
+
+        --primaire: oklch(0.77 0.17 55);
+        --primaire-survol: oklch(0.81 0.15 58);
+        --primaire-texte: oklch(0.17 0.015 260);
+        --primaire-doux: oklch(0.3 0.06 50);
+        --lien: oklch(0.8 0.15 58);
+        --anneau: oklch(0.77 0.17 55);
+
+        --succes: oklch(0.72 0.15 155);
+        --succes-doux: oklch(0.3 0.06 155);
+        --succes-texte: oklch(0.86 0.12 155);
+        --alerte: oklch(0.8 0.15 80);
+        --alerte-doux: oklch(0.32 0.06 75);
+        --alerte-texte: oklch(0.88 0.12 85);
+        --danger: oklch(0.7 0.18 25);
+        --danger-survol: oklch(0.75 0.16 25);
+        --danger-doux: oklch(0.3 0.07 25);
+        --danger-texte: oklch(0.85 0.09 25);
+        --sur-danger: oklch(0.17 0.015 260);
+        --info: oklch(0.72 0.13 245);
+        --info-doux: oklch(0.3 0.06 250);
+        --info-texte: oklch(0.86 0.08 245);
+        --neutre: oklch(0.7 0.02 260);
+        --neutre-doux: oklch(0.3 0.012 260);
+        --neutre-texte: oklch(0.86 0.015 260);
+    }
+
+    html {
+        background-color: var(--fond);
+        color: var(--texte);
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        font-family: var(--font-sans);
+        font-feature-settings: 'cv11', 'ss01';
+    }
+
+    /* Focus visible par défaut sur tout élément interactif */
+    :focus-visible {
+        outline: 2px solid var(--anneau);
+        outline-offset: 2px;
+    }
+
+    ::selection {
+        background-color: var(--color-primaire-200);
+        color: var(--primaire-texte);
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* Fond des modales : voile flouté */
+    dialog::backdrop {
+        background-color: color-mix(in oklch, var(--fond) 55%, transparent);
+        backdrop-filter: blur(4px);
+    }
 }
 
 /* Chiffres à chasse fixe pour les montants et les quantités */
 @utility chiffres {
     font-variant-numeric: tabular-nums;
+}
+
+/* Verre dépoli : réservé à l'en-tête collant, aux modales et aux menus */
+@utility verre {
+    background-color: color-mix(in oklch, var(--surface-elevee) 80%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+}
+
+/* Anneau de focus explicite (pour les éléments dont le focus est porté par un parent) */
+@utility focus-anneau {
+    &:focus-visible {
+        outline: 2px solid var(--anneau);
+        outline-offset: 2px;
+    }
+}
+
+/* Transitions de page (View Transitions API, utilisées par le layout) */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 180ms;
+}
+
+/* Réduire les animations : tout mouvement est désactivé */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
 }

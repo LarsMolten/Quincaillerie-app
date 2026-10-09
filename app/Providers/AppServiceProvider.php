@@ -14,6 +14,7 @@ use App\Models\Retour;
 use App\Models\Utilisateur;
 use App\Models\Vente;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Pagination au design du thème, en français
+        Paginator::defaultView('vendor.pagination.tailwind');
+        Paginator::defaultSimpleView('vendor.pagination.simple-tailwind');
+
         // Noms courts et stables en base pour les relations polymorphes
         // (paiements.payable_type, mouvements_stock.reference_type)
         Relation::enforceMorphMap([
