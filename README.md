@@ -75,7 +75,16 @@ Comptes créés (même mot de passe que `ADMIN_PASSWORD`) : `responsable@`, `ven
 npm run dev            # Vite avec rechargement à chaud
 php artisan serve      # serveur PHP
 php artisan test       # tests automatisés
+php artisan stock:verifier   # contrôle de cohérence du stock (code 1 si écart)
 ```
+
+Le test de concurrence du stock (deux processus vendant le même produit) exige une base MySQL dédiée, dont le nom finit par `_test` :
+
+```sql
+CREATE DATABASE quincaillerie_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+puis `TEST_MYSQL_DATABASE=quincaillerie_test` dans `.env`. Sans cette variable, le test est ignoré.
 
 ## Stack technique
 

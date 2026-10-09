@@ -64,6 +64,23 @@ return [
             ]) : [],
         ],
 
+        // Base MySQL réservée aux tests qui exigent de vrais verrous (concurrence du stock).
+        // Jamais la base de démonstration : son nom doit se terminer par « _test ».
+        'mysql_test' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('TEST_MYSQL_DATABASE'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),

@@ -10,6 +10,7 @@ use App\Models\Fournisseur;
 use App\Models\MouvementStock;
 use App\Models\Produit;
 use App\Models\Vente;
+use App\Services\MouvementStockService;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -51,15 +52,9 @@ class DemoSeederTest extends TestCase
 
     public function test_le_stock_correspond_exactement_aux_mouvements(): void
     {
-        $sommes = MouvementStock::query()
-            ->selectRaw("produit_id, SUM(CASE WHEN sens = 'entree' THEN quantite ELSE -quantite END) AS stock")
-            ->groupBy('produit_id')
-            ->pluck('stock', 'produit_id');
-
-        foreach (Produit::all() as $produit) {
-            $this->assertEqualsWithDelta((float) $sommes[$produit->id], (float) $produit->stock_actuel, 0.001, $produit->nom);
-            $this->assertGreaterThanOrEqual(0, (float) $produit->stock_actuel);
-        }
+        // Contrôle officiel : somme des mouvements et chaîne stock_avant / stock_apres
+        $this->assertTrue(app(MouvementStockService::class)->verifierCoherence()->isEmpty());
+        $this->assertSame(0, Produit::where('stock_actuel', '<', 0)->count());
 
         // Chaque ligne de vente et d'achat a son mouvement de stock
         $this->assertSame(DB::table('lignes_vente')->count(), MouvementStock::where('type', 'vente')->count());
