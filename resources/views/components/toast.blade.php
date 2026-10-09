@@ -28,7 +28,15 @@
                     <span x-show="toast.type === 'alerte'" class="text-alerte"><x-icone nom="triangle-alert" /></span>
                     <span x-show="toast.type === 'info'" class="text-info"><x-icone nom="info" /></span>
                 </span>
-                <p class="flex-1 text-sm font-medium text-texte" x-text="toast.message"></p>
+                <div class="flex-1 text-sm">
+                    <p class="font-medium text-texte" x-text="toast.message"></p>
+                    <template x-if="toast.lien">
+                        <a x-bind:href="toast.lien.url" x-bind:target="toast.lien.nouvelOnglet ? '_blank' : null"
+                           class="mt-1 inline-flex items-center gap-1 font-semibold text-lien underline-offset-4 hover:underline">
+                            <span x-text="toast.lien.libelle"></span> <x-icone nom="external-link" taille="size-3.5" />
+                        </a>
+                    </template>
+                </div>
                 <button type="button" x-on:click="$store.toasts.fermer(toast.id)" aria-label="Fermer la notification"
                         class="-m-1.5 grid size-8 shrink-0 place-items-center rounded-lg text-texte-doux hover:bg-neutre-doux hover:text-texte pointer-coarse:size-11">
                     <x-icone nom="x" taille="size-4" />

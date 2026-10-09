@@ -6,6 +6,7 @@ import listeDynamique from './composants/liste-dynamique';
 import menu from './composants/menu';
 import modal from './composants/modal';
 import recherche from './composants/recherche';
+import saisieAchat from './composants/saisie-achat';
 import theme from './composants/theme';
 import toasts from './composants/toasts';
 
@@ -20,6 +21,7 @@ document.addEventListener('alpine:init', () => {
     coquille(Alpine);
     listeDynamique(Alpine);
     formulaireProduit(Alpine);
+    saisieAchat(Alpine);
 });
 
 window.Alpine = Alpine;

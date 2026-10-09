@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StatutAchat;
+use App\Enums\StatutPaiement;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -74,6 +75,12 @@ class Achat extends Model
     public function scopeValides(Builder $requete): void
     {
         $requete->where('statut', StatutAchat::Valide);
+    }
+
+    /** Badge de règlement : payé, partiel ou à crédit. */
+    protected function statutPaiement(): Attribute
+    {
+        return Attribute::get(fn (): StatutPaiement => StatutPaiement::de($this));
     }
 
     /** Vrai quand il ne reste plus rien à payer au fournisseur. */

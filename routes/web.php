@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AchatController;
 use App\Http\Controllers\Auth\ConnexionController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ClientController;
@@ -45,6 +46,21 @@ Route::middleware('auth')->group(function () {
         ->middleware('droit:produits.modifier')->name('produits.update');
     Route::patch('/produits/{produit}/statut', [ProduitController::class, 'statut'])
         ->middleware('droit:produits.desactiver')->name('produits.statut');
+
+    // Achats (« nouveau » déclaré avant /achats/{achat})
+    Route::middleware('droit:achats.creer')->group(function () {
+        Route::get('/achats/nouveau', [AchatController::class, 'create'])->name('achats.create');
+        Route::post('/achats', [AchatController::class, 'store'])->name('achats.store');
+        Route::get('/achats-produits', [AchatController::class, 'produits'])->name('achats.produits');
+        Route::post('/achats/{achat}/paiements', [AchatController::class, 'paiement'])->whereNumber('achat')->name('achats.paiements.store');
+    });
+    Route::middleware('droit:achats.voir')->group(function () {
+        Route::get('/achats', [AchatController::class, 'index'])->name('achats.index');
+        Route::get('/achats/{achat}', [AchatController::class, 'show'])->whereNumber('achat')->name('achats.show');
+        Route::get('/achats/{achat}/bon', [AchatController::class, 'bon'])->whereNumber('achat')->name('achats.bon');
+    });
+    Route::post('/achats/{achat}/annulation', [AchatController::class, 'annuler'])
+        ->whereNumber('achat')->middleware('droit:achats.annuler')->name('achats.annuler');
 
     // Fournisseurs
     Route::middleware('droit:fournisseurs.gerer')->group(function () {

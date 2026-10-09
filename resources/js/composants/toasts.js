@@ -2,7 +2,8 @@
  * Notifications « toast » globales (jamais d'alert()).
  * - JS : window.toast('succes', 'Produit enregistré.')
  * - Alpine : $dispatch('toast', { type: 'erreur', message: '…' })
- * - Laravel : session()->flash('succes' | 'erreur' | 'info', '…'), lu au chargement de la page.
+ * - Laravel : session()->flash('succes' | 'erreur' | 'info', '…'), lu au chargement de la page ;
+ *   lien facultatif : ->with('toast_lien', ['libelle' => …, 'url' => …, 'nouvelOnglet' => true]).
  */
 const DUREE_PAR_DEFAUT = 5000;
 const MAXIMUM = 5;
@@ -13,9 +14,11 @@ export default function (Alpine) {
         compteur: 0,
         minuteurs: {},
 
-        ajouter(type, message, duree = DUREE_PAR_DEFAUT) {
+        ajouter(type, message, duree = DUREE_PAR_DEFAUT, lien = null) {
             const id = ++this.compteur;
-            this.liste.push({ id, type, message, duree, restant: duree, debut: 0 });
+            // Un toast avec lien reste affiché plus longtemps, pour laisser le temps de cliquer
+            const delai = lien ? Math.max(duree, 9000) : duree;
+            this.liste.push({ id, type, message, lien, duree: delai, restant: delai, debut: 0 });
 
             // Empilement limité : les plus anciens disparaissent
             while (this.liste.length > MAXIMUM) {
@@ -52,15 +55,15 @@ export default function (Alpine) {
         },
     });
 
-    window.toast = (type, message, duree) => Alpine.store('toasts').ajouter(type, message, duree);
+    window.toast = (type, message, duree, lien) => Alpine.store('toasts').ajouter(type, message, duree, lien);
     window.addEventListener('toast', (evenement) => {
-        const { type = 'info', message = '', duree } = evenement.detail ?? {};
-        window.toast(type, message, duree);
+        const { type = 'info', message = '', duree, lien } = evenement.detail ?? {};
+        window.toast(type, message, duree, lien);
     });
 
     // Messages flash de Laravel injectés par le layout
     document.addEventListener('alpine:initialized', () => {
         const donnees = document.getElementById('toasts-flash')?.textContent;
-        JSON.parse(donnees || '[]').forEach(({ type, message }) => window.toast(type, message));
+        JSON.parse(donnees || '[]').forEach(({ type, message, lien }) => window.toast(type, message, undefined, lien));
     });
 }

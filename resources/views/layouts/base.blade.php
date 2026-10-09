@@ -36,7 +36,12 @@
         // Messages flash (contrôleurs) et erreurs de validation, affichés en toasts
         $toasts = collect(['succes', 'erreur', 'info', 'alerte'])
             ->filter(fn (string $type) => session()->has($type))
-            ->map(fn (string $type) => ['type' => $type, 'message' => session($type)])
+            // Lien facultatif (flash « toast_lien » : libelle, url, nouvelOnglet) attaché au toast de succès
+            ->map(fn (string $type) => array_filter([
+                'type' => $type,
+                'message' => session($type),
+                'lien' => $type === 'succes' ? session('toast_lien') : null,
+            ]))
             ->values();
 
         if (session('status')) {

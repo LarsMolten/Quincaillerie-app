@@ -41,8 +41,8 @@ class Navigation
                 $e('Retours clients', 'undo-2', 'retours.clients', '/retours/clients', 'retours.gerer'),
             ]],
             ['titre' => 'Achats', 'entrees' => [
-                $e('Nouvel achat', 'circle-plus', 'achats.create', '/achats/nouveau', 'achats.creer'),
-                $e('Liste des achats', 'truck', 'achats.index', '/achats', 'achats.voir'),
+                $e('Nouvel achat', 'circle-plus', 'achats.create', '/achats/nouveau', 'achats.creer', false),
+                $e('Liste des achats', 'truck', 'achats.index', '/achats', 'achats.voir', false),
                 $e('Fournisseurs', 'store', 'fournisseurs.index', '/fournisseurs', 'fournisseurs.gerer', false),
                 $e('Retours fournisseurs', 'undo-2', 'retours.fournisseurs', '/retours/fournisseurs', 'retours.gerer'),
             ]],
