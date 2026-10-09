@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ConnexionController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\DesignSystemeController;
 use App\Http\Controllers\PreferenceThemeController;
+use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\UniteController;
 use App\Support\Navigation;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,22 @@ Route::middleware('auth')->group(function () {
 
     // Préférence personnelle de l'utilisateur connecté : aucun droit particulier requis
     Route::patch('/preferences/theme', PreferenceThemeController::class)->name('preferences.theme');
+
+    // Produits : jamais de suppression, seulement désactivation
+    Route::middleware('droit:produits.voir')->group(function () {
+        Route::get('/produits', [ProduitController::class, 'index'])->name('produits.index');
+        Route::get('/produits/etiquettes', [ProduitController::class, 'etiquettes'])->name('produits.etiquettes');
+        Route::get('/produits/{produit}', [ProduitController::class, 'show'])->name('produits.show');
+        Route::get('/produits/{produit}/photo', [ProduitController::class, 'photo'])->name('produits.photo');
+    });
+    Route::middleware('droit:produits.creer')->group(function () {
+        Route::post('/produits', [ProduitController::class, 'store'])->name('produits.store');
+        Route::get('/produits-code-barres', [ProduitController::class, 'codeBarres'])->name('produits.code-barres');
+    });
+    Route::put('/produits/{produit}', [ProduitController::class, 'update'])
+        ->middleware('droit:produits.modifier')->name('produits.update');
+    Route::patch('/produits/{produit}/statut', [ProduitController::class, 'statut'])
+        ->middleware('droit:produits.desactiver')->name('produits.statut');
 
     // Catégories et unités
     Route::middleware('droit:categories.gerer')->group(function () {

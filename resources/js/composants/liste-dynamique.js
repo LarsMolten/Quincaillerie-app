@@ -100,6 +100,7 @@ export default function (Alpine) {
                         champ.value = parametres.get(champ.name) ?? '';
                     }
                 }
+                this.$dispatch('liste-chargee', { url });
             } catch (erreur) {
                 clearTimeout(minuteurSquelette);
                 if (erreur.name === 'AbortError') {

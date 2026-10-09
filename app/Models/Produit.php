@@ -90,6 +90,13 @@ class Produit extends Model
             ->whereColumn('stock_actuel', '<=', 'stock_minimum');
     }
 
+    /** Produits dont le stock est au-dessus du stock minimum. */
+    public function scopeStockNormal(Builder $requete): void
+    {
+        $requete->where('stock_actuel', '>', 0)
+            ->whereColumn('stock_actuel', '>', 'stock_minimum');
+    }
+
     /** Recherche par nom, référence ou code-barres. */
     public function scopeRecherche(Builder $requete, ?string $terme): void
     {
@@ -99,11 +106,32 @@ class Produit extends Model
             return;
         }
 
+        // Colonnes qualifiées : la requête peut être jointe aux catégories (tri)
         $requete->where(function (Builder $sousRequete) use ($terme) {
-            $sousRequete->where('nom', 'like', "%{$terme}%")
-                ->orWhere('reference', 'like', "%{$terme}%")
-                ->orWhere('code_barres', $terme);
+            $sousRequete->where($this->qualifyColumn('nom'), 'like', "%{$terme}%")
+                ->orWhere($this->qualifyColumn('reference'), 'like', "%{$terme}%")
+                ->orWhere($this->qualifyColumn('code_barres'), $terme);
         });
+    }
+
+    /** Données du panneau de modification (composant Alpine formulaireProduit). */
+    public function pourFormulaire(): array
+    {
+        return [
+            'cible' => $this->id,
+            'reference' => $this->reference,
+            'code_barres' => (string) $this->code_barres,
+            'nom' => $this->nom,
+            'description' => (string) $this->description,
+            'categorie_id' => (string) $this->categorie_id,
+            'unite_id' => (string) $this->unite_id,
+            'prix_achat' => (string) (float) $this->prix_achat,
+            'prix_vente' => (string) (float) $this->prix_vente,
+            'prix_gros' => $this->prix_gros === null ? '' : (string) (float) $this->prix_gros,
+            'stock_minimum' => (string) (float) $this->stock_minimum,
+            'stock_actuel' => format_quantite($this->stock_actuel, $this->unite?->abreviation),
+            'photo' => $this->image ? route('produits.photo', [$this, 'v' => $this->updated_at?->timestamp]) : null,
+        ];
     }
 
     /** Niveau de stock affiché dans les badges : normal, faible ou rupture. */

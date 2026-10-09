@@ -60,6 +60,16 @@
     --animate-glissement: glissement 200ms ease-out both;
     --animate-squelette: squelette 1.4s ease-in-out infinite;
     --animate-tiroir: tiroir 200ms ease-out both;
+    --animate-panneau: panneau 200ms ease-out both;
+
+    @keyframes panneau {
+        from {
+            transform: translateX(100%);
+        }
+        to {
+            transform: translateX(0);
+        }
+    }
 
     @keyframes tiroir {
         from {

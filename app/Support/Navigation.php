@@ -27,7 +27,7 @@ class Navigation
                 $e('Tableau de bord', 'layout-dashboard', 'accueil', '/', null, false),
             ]],
             ['titre' => 'Stock', 'entrees' => [
-                $e('Produits', 'package', 'produits.index', '/produits', 'produits.voir'),
+                $e('Produits', 'package', 'produits.index', '/produits', 'produits.voir', false),
                 $e('Catégories', 'tags', 'categories.index', '/categories', 'categories.gerer', false, ['unites.*']),
                 $e('Entrées', 'download', 'stock.entrees', '/stock/entrees', 'stock.ajuster'),
                 $e('Sorties', 'upload', 'stock.sorties', '/stock/sorties', 'stock.ajuster'),

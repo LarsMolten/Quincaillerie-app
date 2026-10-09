@@ -1,6 +1,7 @@
 import Alpine from 'alpinejs';
 import bouton from './composants/bouton';
 import coquille from './composants/coquille';
+import formulaireProduit from './composants/formulaire-produit';
 import listeDynamique from './composants/liste-dynamique';
 import menu from './composants/menu';
 import modal from './composants/modal';
@@ -18,6 +19,7 @@ document.addEventListener('alpine:init', () => {
     bouton(Alpine);
     coquille(Alpine);
     listeDynamique(Alpine);
+    formulaireProduit(Alpine);
 });
 
 window.Alpine = Alpine;

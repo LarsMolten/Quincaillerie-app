@@ -19,6 +19,7 @@ use App\Models\Unite;
 use App\Models\Utilisateur;
 use App\Models\Vente;
 use App\Services\MouvementStockService;
+use App\Support\Ean13;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -233,7 +234,7 @@ class DemoSeeder extends Seeder
 
             $produit = Produit::create([
                 'reference' => sprintf('PRD-%05d', $index + 1),
-                'code_barres' => $this->ean13(sprintf('2000000%05d', $index + 1)),
+                'code_barres' => Ean13::completer(sprintf('%s0000%05d', Ean13::PREFIXE_INTERNE, $index + 1)),
                 'nom' => $nom,
                 'categorie_id' => $categories[$categorie],
                 'unite_id' => $unites[$unite],
@@ -488,17 +489,6 @@ class DemoSeeder extends Seeder
         $this->compteurs[$prefixe][$annee] = ($this->compteurs[$prefixe][$annee] ?? 0) + 1;
 
         return sprintf('%s-%d-%05d', $prefixe, $annee, $this->compteurs[$prefixe][$annee]);
-    }
-
-    /** Code EAN-13 valide (préfixe 200 réservé à l'usage interne du magasin). */
-    private function ean13(string $douzeChiffres): string
-    {
-        $somme = 0;
-        foreach (str_split($douzeChiffres) as $position => $chiffre) {
-            $somme += (int) $chiffre * ($position % 2 === 0 ? 1 : 3);
-        }
-
-        return $douzeChiffres.((10 - $somme % 10) % 10);
     }
 
     private function telephone(): string
