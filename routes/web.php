@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\ConnexionController;
+use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\DesignSystemeController;
 use App\Http\Controllers\PreferenceThemeController;
+use App\Http\Controllers\UniteController;
 use App\Support\Navigation;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +26,15 @@ Route::middleware('auth')->group(function () {
 
     // Préférence personnelle de l'utilisateur connecté : aucun droit particulier requis
     Route::patch('/preferences/theme', PreferenceThemeController::class)->name('preferences.theme');
+
+    // Catégories et unités
+    Route::middleware('droit:categories.gerer')->group(function () {
+        Route::resource('categories', CategorieController::class)
+            ->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['categories' => 'categorie']);
+        Route::patch('/categories/{categorie}/statut', [CategorieController::class, 'statut'])->name('categories.statut');
+        Route::resource('unites', UniteController::class)->only(['index', 'store', 'update', 'destroy']);
+    });
 
     // Modules pas encore implémentés : page « Bientôt disponible », protégée par le droit du module
     foreach (Navigation::aVenir() as $entree) {

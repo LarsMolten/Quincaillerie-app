@@ -33,7 +33,7 @@
         placeholder="{{ $placeholder }}"
         autocomplete="off"
         @if ($raccourci) x-ref="champ" aria-keyshortcuts="Control+K /" @endif
-        {{ $attributes->except('class')->class('h-11 w-full rounded-controle border border-bordure-forte bg-surface pl-10 pr-4 text-sm text-texte placeholder:text-texte-doux transition-colors duration-150 sm:pr-20') }}
+        {{ $attributes->except('class')->class(['h-11 w-full rounded-controle border border-bordure-forte bg-surface pl-10 pr-4 text-sm text-texte placeholder:text-texte-doux transition-colors duration-150', 'sm:pr-20' => $raccourci]) }}
     >
     @if ($raccourci)
         <kbd class="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border border-bordure bg-fond px-1.5 py-0.5 font-sans text-xs font-medium text-texte-doux sm:inline-flex">

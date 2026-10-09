@@ -15,11 +15,12 @@ use Illuminate\Support\Facades\Route;
 class Navigation
 {
     /**
-     * @return list<array{titre: ?string, entrees: list<array{libelle: string, icone: string, route: string, url: string, droit: ?string, bientot: bool}>}>
+     * @return list<array{titre: ?string, entrees: list<array{libelle: string, icone: string, route: string, url: string, droit: ?string, bientot: bool, aussi: list<string>}>}>
      */
     public static function sections(): array
     {
-        $e = fn (string $libelle, string $icone, string $route, string $url, ?string $droit, bool $bientot = true) => compact('libelle', 'icone', 'route', 'url', 'droit', 'bientot');
+        // aussi : autres routes qui rendent l'entrée active (ex. les unités, gérées depuis « Catégories »)
+        $e = fn (string $libelle, string $icone, string $route, string $url, ?string $droit, bool $bientot = true, array $aussi = []) => compact('libelle', 'icone', 'route', 'url', 'droit', 'bientot', 'aussi');
 
         return [
             ['titre' => null, 'entrees' => [
@@ -27,7 +28,7 @@ class Navigation
             ]],
             ['titre' => 'Stock', 'entrees' => [
                 $e('Produits', 'package', 'produits.index', '/produits', 'produits.voir'),
-                $e('Catégories', 'tags', 'categories.index', '/categories', 'categories.gerer'),
+                $e('Catégories', 'tags', 'categories.index', '/categories', 'categories.gerer', false, ['unites.*']),
                 $e('Entrées', 'download', 'stock.entrees', '/stock/entrees', 'stock.ajuster'),
                 $e('Sorties', 'upload', 'stock.sorties', '/stock/sorties', 'stock.ajuster'),
                 $e('Mouvements', 'history', 'stock.mouvements', '/stock/mouvements', 'stock.voir'),
@@ -146,7 +147,7 @@ class Navigation
         $route = $entree['route'];
         $courante = Route::currentRouteName();
 
-        if ($courante === $route) {
+        if ($courante === $route || ($entree['aussi'] && request()->routeIs(...$entree['aussi']))) {
             return true;
         }
 

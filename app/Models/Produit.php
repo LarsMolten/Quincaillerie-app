@@ -49,12 +49,12 @@ class Produit extends Model
 
     public function categorie(): BelongsTo
     {
-        return $this->belongsTo(Categorie::class, 'categorie_id');
+        return $this->belongsTo(Categorie::class, 'categorie_id')->withTrashed();
     }
 
     public function unite(): BelongsTo
     {
-        return $this->belongsTo(Unite::class, 'unite_id');
+        return $this->belongsTo(Unite::class, 'unite_id')->withTrashed();
     }
 
     public function lignesAchat(): HasMany

@@ -7,13 +7,14 @@
     - titre, description
     - taille : sm | md (défaut) | lg | xl
     - role   : dialog (défaut) | alertdialog (confirmation d'une action risquée)
+    - titreDynamique : expression Alpine qui remplace le titre (ex. "id ? 'Modifier' : 'Nouvelle catégorie'")
     Slot nommé : pied (boutons d'action, alignés à droite)
 
     Exemple :
     <x-bouton type="button" x-on:click="$dispatch('ouvrir-modal', 'nouvelle-categorie')">Ajouter</x-bouton>
     <x-modal id="nouvelle-categorie" titre="Nouvelle catégorie">…<x-slot:pied>…</x-slot:pied></x-modal>
 --}}
-@props(['id', 'titre', 'description' => null, 'taille' => 'md', 'role' => 'dialog'])
+@props(['id', 'titre', 'description' => null, 'taille' => 'md', 'role' => 'dialog', 'titreDynamique' => null])
 
 @php
     $largeurs = ['sm' => 'max-w-sm', 'md' => 'max-w-lg', 'lg' => 'max-w-2xl', 'xl' => 'max-w-4xl'];
@@ -35,7 +36,7 @@
     <div class="p-6">
         <header class="mb-4 flex items-start justify-between gap-4">
             <div>
-                <h2 id="{{ $id }}-titre" class="text-lg font-semibold text-texte">{{ $titre }}</h2>
+                <h2 id="{{ $id }}-titre" class="text-lg font-semibold text-texte" @if ($titreDynamique) x-text="{{ $titreDynamique }}" @endif>{{ $titre }}</h2>
                 @if ($description)
                     <p id="{{ $id }}-description" class="mt-1 text-sm text-texte-doux">{{ $description }}</p>
                 @endif

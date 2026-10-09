@@ -3,14 +3,18 @@
 namespace App\Providers;
 
 use App\Models\Achat;
+use App\Models\Categorie;
 use App\Models\Client;
 use App\Models\Depense;
 use App\Models\Facture;
 use App\Models\Fournisseur;
 use App\Models\Inventaire;
 use App\Models\Paiement;
+use App\Models\Parametre;
 use App\Models\Produit;
 use App\Models\Retour;
+use App\Models\Role;
+use App\Models\Unite;
 use App\Models\Utilisateur;
 use App\Models\Vente;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -62,9 +66,13 @@ class AppServiceProvider extends ServiceProvider
             'paiement' => Paiement::class,
             'depense' => Depense::class,
             'produit' => Produit::class,
+            'categorie' => Categorie::class,
+            'unite' => Unite::class,
             'client' => Client::class,
             'fournisseur' => Fournisseur::class,
             'utilisateur' => Utilisateur::class,
+            'role' => Role::class,
+            'parametre' => Parametre::class,
         ]);
     }
 }
