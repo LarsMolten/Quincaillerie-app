@@ -1,11 +1,8 @@
 /**
  * Écran de caisse : catalogue (recherche, scanner, catégories), ticket (quantités, tarif, remises),
  * client, paiement et écran de réussite. Le ticket en cours est conservé dans le navigateur
- * (rechargement, coupure réseau), mais une vente n'est JAMAIS validée sans le serveur : il recalcule
- * les prix, les remises, le crédit et le stock à l'enregistrement.
- * La caisse ne se fie pas à navigator.onLine (connexion Internet du poste) : le serveur est local (même
- * poste ou réseau de la boutique) et reste joignable sans Internet. Seul l'échec réel d'une requête
- * signale un serveur injoignable.
+ * (rechargement, coupure réseau), mais une vente n'est JAMAIS validée hors ligne : le serveur
+ * recalcule les prix, les remises, le crédit et le stock à l'enregistrement.
  */
 const ariary = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
 const quantites = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 3 });
@@ -54,7 +51,7 @@ export default function (Alpine) {
         billetsSaisis: false,
         envoi: false,
         erreur: '',
-        serveurInjoignable: false,
+        enLigne: navigator.onLine,
         reussite: null,
 
         init() {
@@ -69,17 +66,19 @@ export default function (Alpine) {
 
             this.ecouteurs = {
                 touche: (e) => this.raccourci(e),
-                // Retour du réseau : l'alerte est retirée (un nouvel échec la remettra)
-                enLigne: () => { this.serveurInjoignable = false; },
+                enLigne: () => { this.enLigne = true; },
+                horsLigne: () => { this.enLigne = false; },
             };
             window.addEventListener('keydown', this.ecouteurs.touche);
             window.addEventListener('online', this.ecouteurs.enLigne);
+            window.addEventListener('offline', this.ecouteurs.horsLigne);
             this.$nextTick(() => this.focusRecherche(true));
         },
 
         destroy() {
             window.removeEventListener('keydown', this.ecouteurs.touche);
             window.removeEventListener('online', this.ecouteurs.enLigne);
+            window.removeEventListener('offline', this.ecouteurs.horsLigne);
         },
 
         /* ---------- Calculs (indicatifs : le serveur fait foi) ---------- */
@@ -170,7 +169,7 @@ export default function (Alpine) {
         },
 
         get peutValider() {
-            return this.lignes.length > 0 && !this.envoi && !this.remiseTropForte && !this.refusPaiement;
+            return this.lignes.length > 0 && !this.envoi && this.enLigne && !this.remiseTropForte && !this.refusPaiement;
         },
 
         ar(montant) {
@@ -236,7 +235,6 @@ export default function (Alpine) {
                     throw new Error(String(reponse.status));
                 }
                 const produits = await reponse.json();
-                this.serveurInjoignable = false;
                 // Une réponse plus ancienne ne remplace jamais une plus récente
                 if (numero === this.requete) {
                     this.produits = produits;
@@ -244,8 +242,7 @@ export default function (Alpine) {
                 return produits;
             } catch {
                 if (numero === this.requete) {
-                    this.serveurInjoignable = true;
-                    window.toast?.('erreur', 'Catalogue indisponible : serveur injoignable.');
+                    window.toast?.('erreur', 'Catalogue indisponible. Vérifiez la connexion.');
                 }
                 return [];
             } finally {
@@ -452,6 +449,9 @@ export default function (Alpine) {
 
         async enregistrer() {
             if (!this.peutValider) {
+                if (!this.enLigne) {
+                    window.toast?.('erreur', 'Connexion perdue : la vente ne peut pas être validée hors ligne. Le ticket est conservé.');
+                }
                 return;
             }
             this.envoi = true;
@@ -478,7 +478,6 @@ export default function (Alpine) {
                     }),
                 });
                 const donnees = await reponse.json().catch(() => ({}));
-                this.serveurInjoignable = false;
 
                 if (reponse.status === 201) {
                     this.reussite = { ...donnees, mode: this.mode, client: this.client.nom };
@@ -501,8 +500,8 @@ export default function (Alpine) {
                     this.erreur = 'Erreur inattendue : la vente n\'a pas été enregistrée. Réessayez.';
                 }
             } catch {
-                this.serveurInjoignable = true;
-                this.erreur = 'Serveur injoignable : la vente n\'a pas été enregistrée. Le ticket est conservé, réessayez.';
+                this.enLigne = navigator.onLine;
+                this.erreur = 'Connexion impossible : la vente n\'a pas été enregistrée. Le ticket est conservé.';
             } finally {
                 this.envoi = false;
             }
