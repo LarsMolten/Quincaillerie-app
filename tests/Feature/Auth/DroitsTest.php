@@ -45,7 +45,7 @@ class DroitsTest extends TestCase
     {
         $admin = $this->avecRole(Role::ADMINISTRATEUR);
 
-        $this->actingAs($admin)->get(route('utilisateurs.index'))->assertOk()->assertSee('Bientôt disponible');
+        $this->actingAs($admin)->get(route('utilisateurs.index'))->assertOk()->assertSee('Nouveau compte');
 
         // Gate::before : même un droit inexistant est accordé à l'Administrateur
         $this->assertTrue($admin->can('module.inexistant'));

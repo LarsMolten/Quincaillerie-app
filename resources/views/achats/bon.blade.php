@@ -13,11 +13,11 @@
         table { width: 100%; border-collapse: collapse; }
         .entete td { vertical-align: top; }
         .entreprise { font-size: 15pt; font-weight: bold; }
-        .accent { color: #fe7802; }
+        .accent { color: {{ $accent['principal'] }}; }
         .doux { color: #5b6475; }
         .titre { font-size: 18pt; font-weight: bold; text-align: right; letter-spacing: 0.5pt; }
         .bloc { border: 0.3mm solid #e2e5ea; border-radius: 2mm; padding: 3mm 4mm; }
-        .lignes th { background: #fff3e6; color: #8a3c00; font-size: 8.5pt; text-align: left; padding: 2.2mm 2mm; border-bottom: 0.4mm solid #fe7802; }
+        .lignes th { background: {{ $accent['doux'] }}; color: {{ $accent['sombre'] }}; font-size: 8.5pt; text-align: left; padding: 2.2mm 2mm; border-bottom: 0.4mm solid {{ $accent['principal'] }}; }
         .lignes td { padding: 2mm; border-bottom: 0.2mm solid #e2e5ea; }
         .droite { text-align: right; }
         .totaux td { padding: 1.4mm 2mm; }

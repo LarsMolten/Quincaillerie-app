@@ -281,6 +281,117 @@
         --graphique-8: oklch(0.7 0.02 260);
     }
 
+    /*
+     * Couleur d'accent (Paramètres > Apparence) : data-accent sur <html> (App\Enums\CouleurAccent).
+     * L'orange sécurité est la valeur par défaut ci-dessus. Contrastes vérifiés (AA) : texte sur l'accent,
+     * liens sur la surface et sur le fond doux, en clair comme en sombre. Les séries de graphiques ne changent pas.
+     */
+    /* Orange explicite : pour un aperçu (pastille data-accent="orange") sous un autre accent */
+    [data-accent='orange'],
+    [data-accent='orange'] .clair {
+        --primaire: oklch(0.72 0.19 50);
+        --primaire-survol: oklch(0.68 0.19 48);
+        --primaire-texte: oklch(0.21 0.03 265);
+        --primaire-doux: oklch(0.97 0.03 70);
+        --lien: oklch(0.5 0.15 42);
+        --anneau: oklch(0.6 0.18 45);
+    }
+
+    [data-accent='bleu'],
+    [data-accent='bleu'] .clair {
+        --primaire: oklch(0.53 0.17 255);
+        --primaire-survol: oklch(0.48 0.16 255);
+        --primaire-texte: oklch(1 0 0);
+        --primaire-doux: oklch(0.96 0.03 250);
+        --lien: oklch(0.5 0.16 255);
+        --anneau: oklch(0.55 0.17 255);
+    }
+
+    [data-accent='vert'],
+    [data-accent='vert'] .clair {
+        --primaire: oklch(0.52 0.13 155);
+        --primaire-survol: oklch(0.47 0.12 155);
+        --primaire-texte: oklch(1 0 0);
+        --primaire-doux: oklch(0.96 0.04 155);
+        --lien: oklch(0.47 0.11 155);
+        --anneau: oklch(0.55 0.13 155);
+    }
+
+    [data-accent='violet'],
+    [data-accent='violet'] .clair {
+        --primaire: oklch(0.52 0.19 295);
+        --primaire-survol: oklch(0.47 0.18 295);
+        --primaire-texte: oklch(1 0 0);
+        --primaire-doux: oklch(0.96 0.03 300);
+        --lien: oklch(0.5 0.19 295);
+        --anneau: oklch(0.55 0.19 295);
+    }
+
+    [data-accent='ardoise'],
+    [data-accent='ardoise'] .clair {
+        --primaire: oklch(0.45 0.04 257);
+        --primaire-survol: oklch(0.4 0.04 257);
+        --primaire-texte: oklch(1 0 0);
+        --primaire-doux: oklch(0.95 0.01 257);
+        --lien: oklch(0.42 0.05 257);
+        --anneau: oklch(0.5 0.05 257);
+    }
+
+    [data-accent='orange'].dark,
+    [data-accent='orange'] .dark,
+    .dark [data-accent='orange'] {
+        --primaire: oklch(0.77 0.17 55);
+        --primaire-survol: oklch(0.81 0.15 58);
+        --primaire-texte: oklch(0.17 0.015 260);
+        --primaire-doux: oklch(0.3 0.06 50);
+        --lien: oklch(0.8 0.15 58);
+        --anneau: oklch(0.77 0.17 55);
+    }
+
+    [data-accent='bleu'].dark,
+    [data-accent='bleu'] .dark,
+    .dark [data-accent='bleu'] {
+        --primaire: oklch(0.74 0.13 250);
+        --primaire-survol: oklch(0.79 0.11 250);
+        --primaire-texte: oklch(0.17 0.015 260);
+        --primaire-doux: oklch(0.3 0.07 255);
+        --lien: oklch(0.8 0.11 250);
+        --anneau: oklch(0.74 0.13 250);
+    }
+
+    [data-accent='vert'].dark,
+    [data-accent='vert'] .dark,
+    .dark [data-accent='vert'] {
+        --primaire: oklch(0.74 0.15 155);
+        --primaire-survol: oklch(0.79 0.13 155);
+        --primaire-texte: oklch(0.17 0.015 260);
+        --primaire-doux: oklch(0.3 0.06 155);
+        --lien: oklch(0.82 0.13 155);
+        --anneau: oklch(0.74 0.15 155);
+    }
+
+    [data-accent='violet'].dark,
+    [data-accent='violet'] .dark,
+    .dark [data-accent='violet'] {
+        --primaire: oklch(0.74 0.14 295);
+        --primaire-survol: oklch(0.79 0.12 295);
+        --primaire-texte: oklch(0.17 0.015 260);
+        --primaire-doux: oklch(0.3 0.08 295);
+        --lien: oklch(0.8 0.12 295);
+        --anneau: oklch(0.74 0.14 295);
+    }
+
+    [data-accent='ardoise'].dark,
+    [data-accent='ardoise'] .dark,
+    .dark [data-accent='ardoise'] {
+        --primaire: oklch(0.78 0.03 257);
+        --primaire-survol: oklch(0.83 0.03 257);
+        --primaire-texte: oklch(0.17 0.015 260);
+        --primaire-doux: oklch(0.3 0.02 257);
+        --lien: oklch(0.84 0.03 257);
+        --anneau: oklch(0.78 0.03 257);
+    }
+
     html {
         background-color: var(--fond);
         color: var(--texte);

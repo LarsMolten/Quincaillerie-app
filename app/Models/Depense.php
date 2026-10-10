@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CategorieDepense;
 use App\Enums\ModePaiement;
+use App\Models\Concerns\Journalisable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,9 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Depense extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, Journalisable, SoftDeletes;
 
     protected $table = 'depenses';
+
+    public const JOURNAL_FEMININ = true;
 
     protected $fillable = [
         'categorie',

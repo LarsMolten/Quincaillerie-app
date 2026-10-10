@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UniteRequest;
 use App\Models\Unite;
-use App\Services\JournalService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,8 +14,6 @@ use Illuminate\Http\Request;
  */
 class UniteController extends Controller
 {
-    public function __construct(private readonly JournalService $journal) {}
-
     public function index(Request $requete): View
     {
         $recherche = trim((string) $requete->query('recherche'));
@@ -53,7 +50,6 @@ class UniteController extends Controller
         if ($supprimee) {
             $supprimee->restore();
             $supprimee->update($donnees);
-            $this->journal->enregistrer('unite.restauree', $supprimee, ['nom' => $supprimee->nom]);
 
             return to_route('unites.index')->with('succes', "Unité « {$supprimee->nom} » restaurée.");
         }
@@ -84,7 +80,6 @@ class UniteController extends Controller
         }
 
         $unite->delete();
-        $this->journal->enregistrer('unite.supprimee', $unite, ['nom' => $unite->nom]);
 
         return back()->with('succes', "Unité « {$unite->nom} » supprimée.");
     }

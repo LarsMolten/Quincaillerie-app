@@ -64,10 +64,10 @@ class Navigation
                 $e('Finances', 'chart-line', 'rapports.finances', '/rapports/finances', 'finances.voir', false),
             ]],
             ['titre' => 'Administration', 'entrees' => [
-                $e('Utilisateurs', 'users', 'utilisateurs.index', '/utilisateurs', 'utilisateurs.gerer'),
-                $e('Rôles et droits', 'shield', 'roles.index', '/roles', 'roles.gerer'),
-                $e('Paramètres', 'settings', 'parametres.index', '/parametres', 'parametres.gerer'),
-                $e('Journal d\'activité', 'scroll-text', 'journal.index', '/journal', 'journal.voir'),
+                $e('Utilisateurs', 'users', 'utilisateurs.index', '/utilisateurs', 'utilisateurs.gerer', false),
+                $e('Rôles et droits', 'shield', 'roles.index', '/roles', 'roles.gerer', false),
+                $e('Paramètres', 'settings', 'parametres.index', '/parametres', 'parametres.gerer', false),
+                $e('Journal d\'activité', 'scroll-text', 'journal.index', '/journal', 'journal.voir', false),
             ]],
         ];
     }

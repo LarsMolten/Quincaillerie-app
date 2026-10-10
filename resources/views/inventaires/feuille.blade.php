@@ -14,9 +14,9 @@
         td, th { vertical-align: middle; }
         .doux { color: #5b6475; }
         .droite { text-align: right; }
-        .entreprise { font-size: 13pt; font-weight: bold; color: #c25400; }
+        .entreprise { font-size: 13pt; font-weight: bold; color: {{ $accent['fonce'] }}; }
         .titre { font-size: 17pt; font-weight: bold; text-align: right; }
-        .categorie { margin-top: 6mm; padding: 2mm 2.5mm; background: #fff3e6; color: #8a3c00; font-weight: bold; border-bottom: 0.5mm solid #fe7802; }
+        .categorie { margin-top: 6mm; padding: 2mm 2.5mm; background: {{ $accent['doux'] }}; color: {{ $accent['sombre'] }}; font-weight: bold; border-bottom: 0.5mm solid {{ $accent['principal'] }}; }
         .lignes th { font-size: 8pt; color: #5b6475; text-align: left; padding: 1.8mm 2.5mm; border-bottom: 0.3mm solid #e2e5ea; }
         .lignes td { padding: 2.6mm 2.5mm; border-bottom: 0.2mm solid #eceef2; }
         .case { border: 0.3mm solid #b9bfca; border-radius: 1mm; height: 6mm; width: 28mm; margin-left: auto; }

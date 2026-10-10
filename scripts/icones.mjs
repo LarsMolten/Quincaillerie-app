@@ -33,6 +33,8 @@ const ICONES = [
     'arrow-left', 'arrow-right',
     // Dépenses (catégories)
     'zap', 'droplet', 'building-2',
+    // Administration (utilisateurs, rôles, paramètres)
+    'user-plus', 'user-x', 'user-check', 'shield-check', 'sparkles', 'image', 'palette',
 ];
 
 const ATTRIBUTS = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '

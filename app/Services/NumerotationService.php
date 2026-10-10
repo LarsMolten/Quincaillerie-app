@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Parametre;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,27 @@ use LogicException;
  */
 class NumerotationService
 {
+    /**
+     * Préfixes paramétrables (écran Paramètres > Facturation) : document => [clé du paramètre, valeur par défaut, libellé].
+     * Changer un préfixe en cours d'année fait repartir la séquence à 00001 pour le nouveau préfixe.
+     */
+    public const PREFIXES = [
+        'facture' => ['prefixe_facture', 'FAC', 'Factures'],
+        'vente' => ['prefixe_vente', 'VTE', 'Ventes'],
+        'achat' => ['prefixe_achat', 'ACH', 'Achats'],
+        'paiement' => ['prefixe_recu', 'REC', 'Reçus de paiement'],
+        'retour' => ['prefixe_retour', 'RET', 'Retours'],
+        'inventaire' => ['prefixe_inventaire', 'INV', 'Inventaires'],
+    ];
+
+    /** Préfixe en vigueur pour un type de document (ex. « vente » → « VTE »). */
+    public function prefixe(string $document): string
+    {
+        [$cle, $defaut] = self::PREFIXES[$document];
+
+        return strtoupper(trim((string) Parametre::valeur($cle, $defaut))) ?: $defaut;
+    }
+
     /**
      * @param  class-string<Model>  $modele  ex. Achat::class
      */

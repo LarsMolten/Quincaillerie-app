@@ -7,7 +7,6 @@ use App\Http\Requests\ClientRequest;
 use App\Models\Client;
 use App\Models\Paiement;
 use App\Models\Vente;
-use App\Services\JournalService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,8 +19,6 @@ use Illuminate\Http\Request;
  */
 class ClientController extends Controller
 {
-    public function __construct(private readonly JournalService $journal) {}
-
     public function index(Request $requete): View
     {
         $recherche = trim((string) $requete->query('recherche'));
@@ -114,7 +111,6 @@ class ClientController extends Controller
         }
 
         $client->update(['actif' => ! $client->actif]);
-        $this->journal->enregistrer($client->actif ? 'client.reactive' : 'client.desactive', $client, ['nom' => $client->nom]);
 
         return back()->with('succes', $client->actif
             ? "Client « {$client->nom} » réactivé."
@@ -132,7 +128,6 @@ class ClientController extends Controller
         }
 
         $client->delete();
-        $this->journal->enregistrer('client.supprime', $client, ['nom' => $client->nom]);
 
         return to_route('clients.index')->with('succes', "Client « {$client->nom} » supprimé.");
     }

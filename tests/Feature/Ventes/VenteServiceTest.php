@@ -225,6 +225,21 @@ class VenteServiceTest extends TestCase
         $this->refus(fn () => $this->vendre(remise: 1), 'plafond autorisé de 0 %');
     }
 
+    public function test_remise_maximale_propre_au_role_du_vendeur(): void
+    {
+        // Responsable : 5 % (Paramètres > Ventes) au lieu des 10 % généraux ; 10 sacs = 380 000 Ar → 19 000 Ar maximum
+        Role::where('nom', RoleSeeder::RESPONSABLE)->update(['remise_max' => 5]);
+        auth()->user()->unsetRelation('role');
+
+        $this->refus(fn () => $this->vendre([['produit_id' => $this->ciment->id, 'quantite' => 10]], remise: 20000), 'plafond autorisé de 5 %');
+        $this->assertEquals(19000, $this->vendre([['produit_id' => $this->ciment->id, 'quantite' => 10]], remise: 19000)->remise);
+
+        // Remise du rôle vidée : retour au plafond général
+        Role::where('nom', RoleSeeder::RESPONSABLE)->update(['remise_max' => null]);
+        auth()->user()->unsetRelation('role');
+        $this->assertEquals(38000, $this->vendre([['produit_id' => $this->ciment->id, 'quantite' => 10]], remise: 38000)->remise);
+    }
+
     public function test_annulation_remet_le_stock_annule_la_facture_et_journalise(): void
     {
         $vente = $this->vendre();

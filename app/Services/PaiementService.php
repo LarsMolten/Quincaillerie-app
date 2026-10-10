@@ -103,7 +103,7 @@ class PaiementService
             }
 
             $paiement = $verrouille->paiements()->create([
-                'numero' => $this->numerotation->suivant(Paiement::class, 'REC', $date),
+                'numero' => $this->numerotation->suivant(Paiement::class, $this->numerotation->prefixe('paiement'), $date),
                 'montant' => $montant,
                 'mode' => $mode,
                 'reference' => $reference,

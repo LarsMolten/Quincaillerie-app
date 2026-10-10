@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\CouleurAccent;
 use App\Models\Achat;
 use App\Models\Categorie;
 use App\Models\Client;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -50,6 +52,12 @@ class AppServiceProvider extends ServiceProvider
 
         // @droit('ventes.remise') … @enddroit
         Blade::if('droit', fn (string $code) => (bool) auth()->user()?->can($code));
+
+        // Documents PDF et emails : palette hexadécimale de la couleur d'accent choisie (Paramètres > Apparence)
+        View::composer([
+            'achats.bon', 'emails.facture', 'factures.a4', 'factures.ticket', 'inventaires.feuille', 'inventaires.rapport',
+            'paiements.recu', 'paiements.recu-ticket', 'produits.etiquettes', 'rapports.pdf.*', 'retours.bon',
+        ], fn ($vue) => $vue->with('accent', CouleurAccent::courante()->pdf()));
 
         // Pagination au design du thème, en français
         Paginator::defaultView('vendor.pagination.tailwind');

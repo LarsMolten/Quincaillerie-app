@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PreferenceTheme;
+use App\Models\Concerns\Journalisable;
 use App\Support\Initiales;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,9 +18,12 @@ use Illuminate\Notifications\Notifiable;
  */
 class Utilisateur extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Journalisable, Notifiable, SoftDeletes;
 
     protected $table = 'utilisateurs';
+
+    /** Le choix du thème est une préférence personnelle, pas une action d'administration. */
+    public const JOURNAL_IGNORES = ['preference_theme'];
 
     protected $fillable = [
         'nom',

@@ -25,16 +25,16 @@
         td, th { vertical-align: top; }
         .doux { color: #5b6475; }
         .droite { text-align: right; }
-        .entreprise { font-size: 13pt; font-weight: bold; color: #c25400; }
+        .entreprise { font-size: 13pt; font-weight: bold; color: {{ $accent['fonce'] }}; }
         .titre { font-size: 17pt; font-weight: bold; text-align: right; }
-        .categorie { margin-top: 5mm; padding: 2mm 2.5mm; background: #fff3e6; color: #8a3c00; font-weight: bold; border-bottom: 0.5mm solid #fe7802; }
+        .categorie { margin-top: 5mm; padding: 2mm 2.5mm; background: {{ $accent['doux'] }}; color: {{ $accent['sombre'] }}; font-weight: bold; border-bottom: 0.5mm solid {{ $accent['principal'] }}; }
         .lignes th { font-size: 7.5pt; color: #5b6475; text-align: left; padding: 1.6mm 2mm; border-bottom: 0.3mm solid #e2e5ea; }
         .lignes th.droite { text-align: right; }
         .lignes td { padding: 1.8mm 2mm; border-bottom: 0.2mm solid #eceef2; }
         .plus { color: #116133; font-weight: bold; }
         .moins { color: #a3261b; font-weight: bold; }
         .bloc { border: 0.3mm solid #e2e5ea; border-radius: 2mm; padding: 3mm 4mm; }
-        .filigrane { position: fixed; top: 110mm; left: 0; width: 100%; text-align: center; font-size: 66pt; font-weight: bold; color: #fde2c4; z-index: -1; }
+        .filigrane { position: fixed; top: 110mm; left: 0; width: 100%; text-align: center; font-size: 66pt; font-weight: bold; color: {{ $accent['moyen'] }}; z-index: -1; }
         .pied { position: fixed; bottom: -10mm; left: 0; width: 100%; font-size: 7.5pt; color: #5b6475; text-align: center; }
     </style>
 </head>

@@ -17,19 +17,19 @@
         td, th { vertical-align: top; }
         .doux { color: #5b6475; }
         .droite { text-align: right; }
-        .monogramme { width: 11mm; height: 11mm; background: #fe7802; color: #ffffff; font-size: 15pt; font-weight: bold; text-align: center; line-height: 11mm; border-radius: 2.5mm; }
+        .monogramme { width: 11mm; height: 11mm; background: {{ $accent['principal'] }}; color: #ffffff; font-size: 15pt; font-weight: bold; text-align: center; line-height: 11mm; border-radius: 2.5mm; }
         .logo { max-height: 13mm; max-width: 40mm; }
-        .entreprise { font-size: 12pt; font-weight: bold; color: #c25400; }
+        .entreprise { font-size: 12pt; font-weight: bold; color: {{ $accent['fonce'] }}; }
         .titre { font-size: 16pt; font-weight: bold; }
-        h2 { font-size: 10.5pt; margin: 6mm 0 2mm; color: #8a3c00; border-bottom: 0.5mm solid #fe7802; padding-bottom: 1mm; }
+        h2 { font-size: 10.5pt; margin: 6mm 0 2mm; color: {{ $accent['sombre'] }}; border-bottom: 0.5mm solid {{ $accent['principal'] }}; padding-bottom: 1mm; }
         .cartes td { border: 0.3mm solid #e2e5ea; border-radius: 2mm; padding: 2.5mm 3mm; width: 25%; }
         .cartes .valeur { font-size: 12pt; font-weight: bold; }
-        .lignes th { background: #fff3e6; color: #8a3c00; font-size: 7.5pt; text-align: left; padding: 1.8mm 2mm; border-bottom: 0.4mm solid #fe7802; }
+        .lignes th { background: {{ $accent['doux'] }}; color: {{ $accent['sombre'] }}; font-size: 7.5pt; text-align: left; padding: 1.8mm 2mm; border-bottom: 0.4mm solid {{ $accent['principal'] }}; }
         .lignes th.droite { text-align: right; }
         .lignes td { padding: 1.6mm 2mm; border-bottom: 0.2mm solid #eceef2; }
         .lignes tr.bande td { background: #fafbfc; }
         .lignes tr.total td { font-weight: bold; border-top: 0.4mm solid #111826; }
-        .barre { height: 2.6mm; background: #fe7802; border-radius: 1mm; }
+        .barre { height: 2.6mm; background: {{ $accent['principal'] }}; border-radius: 1mm; }
         .negatif { color: #a3261b; }
         .pied { position: fixed; bottom: -9mm; left: 0; width: 100%; font-size: 7pt; color: #5b6475; }
         .pied .page:after { content: counter(page); }

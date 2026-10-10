@@ -13,7 +13,7 @@
         body { font-family: Helvetica, Arial, sans-serif; color: #111826; margin: 0; }
         table.planche { width: 100%; border-collapse: separate; border-spacing: 2mm; table-layout: fixed; }
         td.etiquette { width: 33.33%; height: 31mm; border: 0.3mm solid #e2e5ea; border-radius: 2mm; padding: 2mm 2.5mm; vertical-align: top; overflow: hidden; }
-        .entreprise { font-size: 6pt; color: #fe7802; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3pt; }
+        .entreprise { font-size: 6pt; color: {{ $accent['principal'] }}; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3pt; }
         .nom { font-size: 8pt; font-weight: bold; line-height: 1.15; height: 18pt; overflow: hidden; margin-top: 0.5mm; }
         .prix { font-size: 12pt; font-weight: bold; margin-top: 0.5mm; }
         .code { text-align: center; margin-top: 1mm; }

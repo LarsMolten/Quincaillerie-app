@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CategorieRequest;
 use App\Models\Categorie;
 use App\Models\Produit;
-use App\Services\JournalService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,8 +15,6 @@ use Illuminate\Http\Request;
  */
 class CategorieController extends Controller
 {
-    public function __construct(private readonly JournalService $journal) {}
-
     public function index(Request $requete): View
     {
         $recherche = trim((string) $requete->query('recherche'));
@@ -62,7 +59,6 @@ class CategorieController extends Controller
         if ($supprimee) {
             $supprimee->restore();
             $supprimee->update($donnees);
-            $this->journal->enregistrer('categorie.restauree', $supprimee, ['nom' => $supprimee->nom]);
 
             return to_route('categories.index')->with('succes', "Catégorie « {$supprimee->nom} » restaurée.");
         }
@@ -83,11 +79,6 @@ class CategorieController extends Controller
     public function statut(Categorie $categorie): RedirectResponse
     {
         $categorie->update(['actif' => ! $categorie->actif]);
-        $this->journal->enregistrer(
-            $categorie->actif ? 'categorie.reactivee' : 'categorie.desactivee',
-            $categorie,
-            ['nom' => $categorie->nom],
-        );
 
         return back()->with('succes', $categorie->actif
             ? "Catégorie « {$categorie->nom} » réactivée."
@@ -109,7 +100,6 @@ class CategorieController extends Controller
         }
 
         $categorie->delete();
-        $this->journal->enregistrer('categorie.supprimee', $categorie, ['nom' => $categorie->nom]);
 
         return back()->with('succes', "Catégorie « {$categorie->nom} » supprimée.");
     }

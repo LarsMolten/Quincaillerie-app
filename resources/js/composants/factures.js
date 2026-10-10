@@ -10,9 +10,9 @@ import { versBlobPdf } from './ouvrir-pdf.js';
 const jetonCsrf = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
 export default function (Alpine) {
-    Alpine.data('factures', ({ urlFiche, apercu = null }) => ({
+    Alpine.data('factures', ({ urlFiche, apercu = null, format = 'a4' }) => ({
         facture: null,
-        format: 'a4',
+        format,
         chargement: false,
         erreur: '',
         adresse: null,

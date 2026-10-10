@@ -80,7 +80,7 @@ class AchatService
         // la tentative annulée ne laisse aucune trace, la suivante prend le numéro libre
         return DB::transaction(function () use ($fournisseur, $lignes, $produits, $total, $montantPaye, $mode, $notes, $date, $majPrix) {
             $achat = Achat::create([
-                'numero' => $this->numerotation->suivant(Achat::class, 'ACH', $date),
+                'numero' => $this->numerotation->suivant(Achat::class, $this->numerotation->prefixe('achat'), $date),
                 'fournisseur_id' => $fournisseur->id,
                 'utilisateur_id' => Auth::id(),
                 'date_achat' => $date,

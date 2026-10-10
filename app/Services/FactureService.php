@@ -24,6 +24,12 @@ class FactureService
 
     public const FORMAT_TICKET = 'ticket';
 
+    /** Format d'impression par défaut (Paramètres > Facturation). */
+    public static function formatParDefaut(): string
+    {
+        return Parametre::valeur('format_facture') === self::FORMAT_TICKET ? self::FORMAT_TICKET : self::FORMAT_A4;
+    }
+
     /** Conversion pour le format du papier DomPDF (1 mm = 72 / 25,4 points). */
     private const POINTS_PAR_MM = 72 / 25.4;
 
@@ -35,10 +41,8 @@ class FactureService
             throw new LogicException('La facture doit être émise dans la transaction de la vente.');
         }
 
-        $prefixe = strtoupper(trim((string) Parametre::valeur('prefixe_facture', 'FAC'))) ?: 'FAC';
-
         return $vente->facture()->create([
-            'numero' => $this->numerotation->suivant(Facture::class, $prefixe, $vente->date_vente),
+            'numero' => $this->numerotation->suivant(Facture::class, $this->numerotation->prefixe('facture'), $vente->date_vente),
             'date_emission' => $vente->date_vente,
             'total' => $vente->total,
             'statut' => StatutFacture::Emise,

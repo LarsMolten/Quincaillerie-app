@@ -5,7 +5,8 @@
 
 @php
     $classePuce = 'h-9 rounded-full border border-bordure-forte px-3.5 text-sm font-medium whitespace-nowrap text-texte-doux transition-colors duration-150 hover:text-texte aria-pressed:border-primaire aria-pressed:bg-primaire-doux aria-pressed:text-lien pointer-coarse:h-11';
-    $config = ['urlFiche' => route('factures.show', '__ID__'), 'apercu' => $apercu];
+    // Format affiché en premier dans l'aperçu : celui des paramètres (Facturation)
+    $config = ['urlFiche' => route('factures.show', '__ID__'), 'apercu' => $apercu, 'format' => \App\Services\FactureService::formatParDefaut()];
 @endphp
 
 @section('page')

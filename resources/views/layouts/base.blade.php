@@ -4,7 +4,8 @@
     Utilisation : @extends('layouts.base') puis @section('titre') et @section('contenu').
 --}}
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+{{-- Couleur d'accent (Paramètres > Apparence) : jetons redéfinis par resources/css/app.css --}}
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-accent="{{ \App\Enums\CouleurAccent::courante()->value }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">

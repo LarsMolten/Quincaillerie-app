@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StatutAchat;
+use App\Models\Concerns\Journalisable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Fournisseur extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, Journalisable, SoftDeletes;
 
     protected $table = 'fournisseurs';
 

@@ -81,6 +81,10 @@ function appliquer(page) {
         }
     }
     document.title = page.title;
+    // Couleur d'accent (Paramètres > Apparence) : celle de la page reçue
+    if (page.documentElement.dataset.accent) {
+        document.documentElement.dataset.accent = page.documentElement.dataset.accent;
+    }
     const jeton = page.querySelector('meta[name="csrf-token"]')?.content;
     if (jeton) {
         document.querySelector('meta[name="csrf-token"]')?.setAttribute('content', jeton);

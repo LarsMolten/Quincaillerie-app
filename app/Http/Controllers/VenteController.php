@@ -97,7 +97,7 @@ class VenteController extends Controller
             'comptoir' => $comptoir ? $this->pourCaisse($comptoir) : null,
             'remise' => [
                 'autorisee' => (bool) auth()->user()->can('ventes.remise'),
-                'plafond' => (float) Parametre::valeur('remise_max_pourcentage', 0),
+                'plafond' => (float) auth()->user()->role?->plafondRemise(),
             ],
             'stockNegatif' => Parametre::actif('stock_negatif_autorise'),
         ]);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\StatutAchat;
 use App\Enums\StatutPaiement;
+use App\Models\Concerns\Journalisable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,9 +15,12 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Achat extends Model
 {
-    use HasFactory;
+    use HasFactory, Journalisable;
 
     protected $table = 'achats';
+
+    /** Seule la création est tracée ici : l'annulation l'est par AchatService, avec le motif. */
+    public const JOURNAL_EVENEMENTS = ['cree'];
 
     protected $fillable = [
         'numero',

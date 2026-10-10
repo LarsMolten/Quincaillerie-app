@@ -237,7 +237,7 @@ class RetourService
             }
 
             $retour = Retour::create([
-                'numero' => $this->numerotation->suivant(Retour::class, 'RET', today()),
+                'numero' => $this->numerotation->suivant(Retour::class, $this->numerotation->prefixe('retour'), today()),
                 'type' => $type,
                 'vente_id' => $estClient ? $verrouille->id : null,
                 'achat_id' => $estClient ? null : $verrouille->id,

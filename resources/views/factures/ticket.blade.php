@@ -15,7 +15,7 @@
         .centre { text-align: center; }
         .droite { text-align: right; }
         .doux { color: #5b6475; }
-        .entreprise { font-size: 12pt; font-weight: bold; color: #c25400; }
+        .entreprise { font-size: 12pt; font-weight: bold; color: {{ $accent['fonce'] }}; }
         .logo { max-height: 14mm; max-width: 40mm; margin-bottom: 1mm; }
         .separateur { border-top: 0.3mm dashed #8a909c; margin: 2.5mm 0; }
         .lignes td { padding: 0.8mm 0; vertical-align: top; }

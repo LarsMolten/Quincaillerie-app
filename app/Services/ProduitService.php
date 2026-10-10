@@ -16,7 +16,6 @@ class ProduitService
     public function __construct(
         private readonly MouvementStockService $stock,
         private readonly PhotoProduitService $photos,
-        private readonly JournalService $journal,
     ) {}
 
     public function creer(array $donnees, ?UploadedFile $photo = null, float $stockInitial = 0): Produit
@@ -72,11 +71,6 @@ class ProduitService
     public function basculerStatut(Produit $produit): Produit
     {
         $produit->update(['actif' => ! $produit->actif]);
-        $this->journal->enregistrer(
-            $produit->actif ? 'produit.reactive' : 'produit.desactive',
-            $produit,
-            ['reference' => $produit->reference, 'nom' => $produit->nom],
-        );
 
         return $produit;
     }

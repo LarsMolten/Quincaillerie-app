@@ -7,7 +7,6 @@ use App\Enums\StatutVente;
 use App\Enums\TypeMouvementStock;
 use App\Exceptions\OperationRefuseeException;
 use App\Models\Client;
-use App\Models\Parametre;
 use App\Models\Produit;
 use App\Models\Vente;
 use Illuminate\Support\Facades\Auth;
@@ -73,7 +72,7 @@ class VenteService
             $date = now();
 
             $vente = Vente::create([
-                'numero' => $this->numerotation->suivant(Vente::class, 'VTE', $date),
+                'numero' => $this->numerotation->suivant(Vente::class, $this->numerotation->prefixe('vente'), $date),
                 'client_id' => $client->id,
                 'utilisateur_id' => Auth::id(),
                 'date_vente' => $date,
@@ -267,7 +266,8 @@ class VenteService
             throw new OperationRefuseeException('Vous n\'avez pas le droit d\'accorder une remise.');
         }
 
-        $plafond = (float) Parametre::valeur('remise_max_pourcentage', 0);
+        // Plafond du rôle du vendeur (Paramètres > Ventes), sinon le plafond général
+        $plafond = (float) Auth::user()?->role?->plafondRemise();
         $brut = $this->montantBrut($lignes);
 
         if ($brut > 0 && $remises > round($brut * $plafond / 100, 2) + 0.001) {

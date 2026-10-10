@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use LogicException;
 
 /**
- * Trace des actions sensibles : annulations, remises, ajustements, suppressions, connexions.
+ * Trace des actions : connexions, annulations, remises, ajustements, et (trait Journalisable)
+ * créations, modifications, suppressions. Non modifiable.
  */
 class JournalActivite extends Model
 {
@@ -26,6 +28,13 @@ class JournalActivite extends Model
         'details',
         'adresse_ip',
     ];
+
+    protected static function booted(): void
+    {
+        // Journal non modifiable : une entrée ne se corrige ni ne se supprime
+        static::updating(fn () => throw new LogicException('Le journal d\'activité ne peut pas être modifié.'));
+        static::deleting(fn () => throw new LogicException('Le journal d\'activité ne peut pas être supprimé.'));
+    }
 
     protected function casts(): array
     {

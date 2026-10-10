@@ -55,7 +55,7 @@
                 <x-tableau.cellule libelle="Actions" alignement="droite">
                     <x-menu-actions :libelle="'Actions pour la facture '.$facture->numero">
                         <x-menu-actions.element icone="eye" x-on:click="$dispatch('facture-apercu', {{ $facture->id }})">Aperçu</x-menu-actions.element>
-                        <x-menu-actions.element icone="printer" :href="route('factures.pdf', $facture)" target="_blank" x-ouvrir-pdf>Imprimer (A4)</x-menu-actions.element>
+                        <x-menu-actions.element icone="printer" :href="route('factures.pdf', [$facture, 'format' => 'a4'])" target="_blank" x-ouvrir-pdf>Imprimer (A4)</x-menu-actions.element>
                         <x-menu-actions.element icone="receipt" :href="route('factures.pdf', [$facture, 'format' => 'ticket'])" target="_blank" x-ouvrir-pdf>Ticket 80 mm</x-menu-actions.element>
                         <x-menu-actions.element icone="download" :href="route('factures.pdf', [$facture, 'telecharger' => 1])">Télécharger le PDF</x-menu-actions.element>
                         <x-menu-actions.element icone="send" x-on:click="$dispatch('facture-envoi', {{ $facture->id }})">Envoyer par email</x-menu-actions.element>

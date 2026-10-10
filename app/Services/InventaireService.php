@@ -62,7 +62,7 @@ class InventaireService
             }
 
             $inventaire = Inventaire::create([
-                'numero' => $this->numerotation->suivant(Inventaire::class, 'INV', today()),
+                'numero' => $this->numerotation->suivant(Inventaire::class, $this->numerotation->prefixe('inventaire'), today()),
                 'date_inventaire' => today(),
                 'statut' => StatutInventaire::EnCours,
                 'utilisateur_id' => Auth::id(),

@@ -21,19 +21,19 @@
         .petit { font-size: 8pt; }
         .droite { text-align: right; }
         .centre { text-align: center; }
-        .monogramme { width: 13mm; height: 13mm; background: #fe7802; color: #ffffff; font-size: 18pt; font-weight: bold; text-align: center; line-height: 13mm; border-radius: 3mm; }
+        .monogramme { width: 13mm; height: 13mm; background: {{ $accent['principal'] }}; color: #ffffff; font-size: 18pt; font-weight: bold; text-align: center; line-height: 13mm; border-radius: 3mm; }
         .logo { max-height: 16mm; max-width: 45mm; }
-        .entreprise { font-size: 15pt; font-weight: bold; color: #c25400; }
+        .entreprise { font-size: 15pt; font-weight: bold; color: {{ $accent['fonce'] }}; }
         .titre { font-size: 24pt; font-weight: bold; letter-spacing: 1pt; color: #111826; }
         .numero { font-size: 11pt; font-weight: bold; }
         .etiquette { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.6pt; color: #8a909c; margin-bottom: 1.5mm; }
         .bloc { border: 0.3mm solid #e2e5ea; border-radius: 2mm; padding: 4mm 5mm; }
-        .lignes th { background: #fff3e6; color: #8a3c00; font-size: 8pt; text-align: left; padding: 2.5mm 2.5mm; border-bottom: 0.5mm solid #fe7802; }
+        .lignes th { background: {{ $accent['doux'] }}; color: {{ $accent['sombre'] }}; font-size: 8pt; text-align: left; padding: 2.5mm 2.5mm; border-bottom: 0.5mm solid {{ $accent['principal'] }}; }
         .lignes th.droite { text-align: right; }
         .lignes td { padding: 2.6mm 2.5mm; border-bottom: 0.2mm solid #eceef2; }
         .lignes tr.bande td { background: #fafbfc; }
         .totaux td { padding: 1.5mm 2.5mm; }
-        .a-payer td { background: #fff3e6; color: #8a3c00; font-size: 14pt; font-weight: bold; padding: 3.5mm 2.5mm; border-top: 0.5mm solid #fe7802; }
+        .a-payer td { background: {{ $accent['doux'] }}; color: {{ $accent['sombre'] }}; font-size: 14pt; font-weight: bold; padding: 3.5mm 2.5mm; border-top: 0.5mm solid {{ $accent['principal'] }}; }
         .badge { display: inline-block; padding: 0.8mm 2.5mm; border-radius: 3mm; font-size: 8pt; font-weight: bold; }
         .badge-succes { background: #e3f6ea; color: #116133; }
         .badge-alerte { background: #fff2d9; color: #8a5100; }

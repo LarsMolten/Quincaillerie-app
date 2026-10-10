@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EtatStock;
+use App\Models\Concerns\Journalisable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,9 +14,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Produit extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, Journalisable, SoftDeletes;
 
     protected $table = 'produits';
+
+    /** Le stock change à chaque mouvement (MouvementStockService, déjà tracé dans mouvements_stock). */
+    public const JOURNAL_IGNORES = ['stock_actuel'];
 
     /**
      * « stock_actuel » est volontairement absent : seul MouvementStockService le modifie.

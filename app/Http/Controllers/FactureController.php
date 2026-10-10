@@ -104,7 +104,7 @@ class FactureController extends Controller
             'email' => $client?->email,
             'telephone' => $client?->telephone,
             'urls' => [
-                'a4' => route('factures.pdf', $facture),
+                'a4' => route('factures.pdf', [$facture, 'format' => FactureService::FORMAT_A4]),
                 'ticket' => route('factures.pdf', [$facture, 'format' => FactureService::FORMAT_TICKET]),
                 'telecharger' => route('factures.pdf', [$facture, 'telecharger' => 1]),
                 'envoyer' => route('factures.envoyer', $facture),
@@ -114,10 +114,11 @@ class FactureController extends Controller
         ]);
     }
 
-    /** PDF A4 (par défaut) ou ticket 80 mm ; ?telecharger=1 pour un téléchargement. */
+    /** PDF A4 ou ticket 80 mm (?format=, sinon le format par défaut des paramètres) ; ?telecharger=1 pour un téléchargement. */
     public function pdf(Request $requete, Facture $facture): Response
     {
-        $format = $requete->query('format') === FactureService::FORMAT_TICKET ? FactureService::FORMAT_TICKET : FactureService::FORMAT_A4;
+        $demande = $requete->query('format', FactureService::formatParDefaut());
+        $format = $demande === FactureService::FORMAT_TICKET ? FactureService::FORMAT_TICKET : FactureService::FORMAT_A4;
 
         return ReponsePdf::depuis($requete, $this->factures->pdf($facture, $format), $this->factures->nomFichier($facture, $format));
     }

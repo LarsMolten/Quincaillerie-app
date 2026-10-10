@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ModePaiement;
 use App\Enums\StatutPaiement;
 use App\Enums\StatutVente;
+use App\Models\Concerns\Journalisable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,9 +17,14 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Vente extends Model
 {
-    use HasFactory;
+    use HasFactory, Journalisable;
 
     protected $table = 'ventes';
+
+    public const JOURNAL_FEMININ = true;
+
+    /** Seule la création est tracée ici : l'annulation l'est par VenteService, avec le motif. */
+    public const JOURNAL_EVENEMENTS = ['cree'];
 
     protected $fillable = [
         'numero',

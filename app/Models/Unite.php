@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Journalisable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,9 +13,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Unite extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, Journalisable, SoftDeletes;
 
     protected $table = 'unites';
+
+    public const JOURNAL_FEMININ = true;
 
     protected $fillable = [
         'nom',

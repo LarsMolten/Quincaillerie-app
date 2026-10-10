@@ -19,15 +19,15 @@
         .doux { color: #5b6475; }
         .droite { text-align: right; }
         .centre { text-align: center; }
-        .monogramme { width: 11mm; height: 11mm; background: #fe7802; color: #ffffff; font-size: 15pt; font-weight: bold; text-align: center; line-height: 11mm; border-radius: 2.5mm; }
+        .monogramme { width: 11mm; height: 11mm; background: {{ $accent['principal'] }}; color: #ffffff; font-size: 15pt; font-weight: bold; text-align: center; line-height: 11mm; border-radius: 2.5mm; }
         .logo { max-height: 13mm; max-width: 36mm; }
-        .entreprise { font-size: 12pt; font-weight: bold; color: #c25400; }
+        .entreprise { font-size: 12pt; font-weight: bold; color: {{ $accent['fonce'] }}; }
         .titre { font-size: 13pt; font-weight: bold; letter-spacing: 0.6pt; white-space: nowrap; }
         .numero { font-size: 10pt; font-weight: bold; }
         .etiquette { font-size: 7pt; text-transform: uppercase; letter-spacing: 0.6pt; color: #8a909c; margin-bottom: 1mm; }
         .bloc { border: 0.3mm solid #e2e5ea; border-radius: 2mm; padding: 3mm 4mm; }
-        .montant { background: #fff3e6; border-top: 0.5mm solid #fe7802; padding: 5mm 4mm; }
-        .montant .valeur { font-size: 20pt; font-weight: bold; color: #8a3c00; }
+        .montant { background: {{ $accent['doux'] }}; border-top: 0.5mm solid {{ $accent['principal'] }}; padding: 5mm 4mm; }
+        .montant .valeur { font-size: 20pt; font-weight: bold; color: {{ $accent['sombre'] }}; }
         .situation td { padding: 1.4mm 0; border-bottom: 0.2mm solid #eceef2; }
         .situation tr.fin td { border-bottom: 0; font-weight: bold; font-size: 10pt; }
         .annule { border: 0.5mm solid #b42318; color: #b42318; font-weight: bold; text-align: center; padding: 1.5mm; margin-bottom: 4mm; }

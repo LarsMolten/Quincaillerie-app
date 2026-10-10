@@ -12,7 +12,7 @@
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px; background: #ffffff; border: 1px solid #e2e5ea; border-radius: 12px;">
                     <tr>
                         <td style="padding: 28px 32px 8px;">
-                            <p style="margin: 0; font-size: 18px; font-weight: bold; color: #c25400;">{{ $entreprise['nom'] }}</p>
+                            <p style="margin: 0; font-size: 18px; font-weight: bold; color: {{ $accent['fonce'] }};">{{ $entreprise['nom'] }}</p>
                             @if ($entreprise['adresse'])<p style="margin: 4px 0 0; font-size: 13px; color: #5b6475;">{{ $entreprise['adresse'] }}</p>@endif
                         </td>
                     </tr>
@@ -24,13 +24,13 @@
                             @else
                                 <p style="margin: 0 0 12px;">Veuillez trouver ci-joint votre facture.</p>
                             @endif
-                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 16px 0; background: #fff3e6; border-radius: 8px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 16px 0; background: {{ $accent['doux'] }}; border-radius: 8px;">
                                 <tr>
-                                    <td style="padding: 14px 16px; font-size: 14px; color: #8a3c00;">
+                                    <td style="padding: 14px 16px; font-size: 14px; color: {{ $accent['sombre'] }};">
                                         Facture <strong>{{ $facture->numero }}</strong><br>
                                         du {{ $facture->date_emission->translatedFormat('j F Y') }}
                                     </td>
-                                    <td align="right" style="padding: 14px 16px; font-size: 20px; font-weight: bold; color: #8a3c00;">{{ format_ar($facture->total) }}</td>
+                                    <td align="right" style="padding: 14px 16px; font-size: 20px; font-weight: bold; color: {{ $accent['sombre'] }};">{{ format_ar($facture->total) }}</td>
                                 </tr>
                             </table>
                             @if ((float) $vente->reste_a_payer > 0)

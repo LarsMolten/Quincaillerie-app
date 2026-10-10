@@ -11,14 +11,18 @@ use App\Http\Controllers\DetteController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\InventaireController;
+use App\Http\Controllers\JournalController;
 use App\Http\Controllers\MouvementController;
 use App\Http\Controllers\PaiementController;
+use App\Http\Controllers\ParametreController;
 use App\Http\Controllers\PreferenceThemeController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\RapportController;
 use App\Http\Controllers\RetourController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TableauDeBordController;
 use App\Http\Controllers\UniteController;
+use App\Http\Controllers\UtilisateurController;
 use App\Http\Controllers\VenteController;
 use App\Support\Navigation;
 use Illuminate\Support\Facades\Route;
@@ -190,6 +194,33 @@ Route::middleware('auth')->group(function () {
         Route::patch('/categories/{categorie}/statut', [CategorieController::class, 'statut'])->name('categories.statut');
         Route::resource('unites', UniteController::class)->only(['index', 'store', 'update', 'destroy']);
     });
+
+    // Administration : utilisateurs
+    Route::middleware('droit:utilisateurs.gerer')->group(function () {
+        Route::resource('utilisateurs', UtilisateurController::class)->only(['index', 'store', 'update', 'destroy'])
+            ->where(['utilisateur' => '[0-9]+']);
+        Route::patch('/utilisateurs/{utilisateur}/statut', [UtilisateurController::class, 'statut'])->whereNumber('utilisateur')->name('utilisateurs.statut');
+        Route::put('/utilisateurs/{utilisateur}/mot-de-passe', [UtilisateurController::class, 'motDePasse'])->whereNumber('utilisateur')->name('utilisateurs.mot-de-passe');
+    });
+
+    // Administration : rôles et droits
+    Route::middleware('droit:roles.gerer')->group(function () {
+        Route::resource('roles', RoleController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
+            ->where(['role' => '[0-9]+']);
+        Route::put('/roles/{role}/droits', [RoleController::class, 'droits'])->whereNumber('role')->name('roles.droits');
+    });
+
+    // Administration : paramètres (un onglet par adresse)
+    Route::middleware('droit:parametres.gerer')->group(function () {
+        Route::get('/parametres/logo', [ParametreController::class, 'logo'])->name('parametres.logo');
+        Route::get('/parametres/{onglet?}', [ParametreController::class, 'index'])
+            ->whereIn('onglet', array_keys(ParametreController::ONGLETS))->name('parametres.index');
+        Route::put('/parametres/{onglet}', [ParametreController::class, 'update'])
+            ->whereIn('onglet', array_keys(ParametreController::ONGLETS))->name('parametres.update');
+    });
+
+    // Administration : journal d'activité (lecture seule)
+    Route::get('/journal', [JournalController::class, 'index'])->middleware('droit:journal.voir')->name('journal.index');
 
     // Modules pas encore implémentés : page « Bientôt disponible », protégée par le droit du module
     foreach (Navigation::aVenir() as $entree) {

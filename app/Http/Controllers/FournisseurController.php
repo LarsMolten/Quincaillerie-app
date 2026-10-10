@@ -7,7 +7,6 @@ use App\Http\Requests\FournisseurRequest;
 use App\Models\Achat;
 use App\Models\Fournisseur;
 use App\Models\Paiement;
-use App\Services\JournalService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,8 +17,6 @@ use Illuminate\Http\Request;
  */
 class FournisseurController extends Controller
 {
-    public function __construct(private readonly JournalService $journal) {}
-
     public function index(Request $requete): View
     {
         $recherche = trim((string) $requete->query('recherche'));
@@ -96,7 +93,6 @@ class FournisseurController extends Controller
     public function statut(Fournisseur $fournisseur): RedirectResponse
     {
         $fournisseur->update(['actif' => ! $fournisseur->actif]);
-        $this->journal->enregistrer($fournisseur->actif ? 'fournisseur.reactive' : 'fournisseur.desactive', $fournisseur, ['nom' => $fournisseur->nom]);
 
         return back()->with('succes', $fournisseur->actif
             ? "Fournisseur « {$fournisseur->nom} » réactivé."
@@ -110,7 +106,6 @@ class FournisseurController extends Controller
         }
 
         $fournisseur->delete();
-        $this->journal->enregistrer('fournisseur.supprime', $fournisseur, ['nom' => $fournisseur->nom]);
 
         return to_route('fournisseurs.index')->with('succes', "Fournisseur « {$fournisseur->nom} » supprimé.");
     }
