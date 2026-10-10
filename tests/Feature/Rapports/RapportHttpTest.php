@@ -97,9 +97,9 @@ class RapportHttpTest extends TestCase
             && count(collect($export->sheets())->last()->array()) === 9);
     }
 
-    public function test_droits_et_redirection_des_resultats(): void
+    public function test_droits_des_rapports(): void
     {
-        $this->get('/resultats')->assertRedirect('/rapports/finances');
+        $this->get('/resultats')->assertNotFound();
 
         foreach ([RoleSeeder::VENDEUR, RoleSeeder::MAGASINIER] as $role) {
             $this->actingAs(Utilisateur::factory()->create(['role_id' => Role::where('nom', $role)->firstOrFail()->id]));

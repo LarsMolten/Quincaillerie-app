@@ -149,8 +149,6 @@ Route::middleware('auth')->group(function () {
     }
     Route::get('/rapports/{rapport}/{format}', [RapportController::class, 'export'])
         ->whereIn('rapport', array_keys(RapportController::RAPPORTS))->whereIn('format', ['pdf', 'excel'])->name('rapports.export');
-    // « Résultats » (menu Finances) : le rapport financier
-    Route::redirect('/resultats', '/rapports/finances')->middleware('droit:finances.voir')->name('resultats.index');
 
     // Paiements, créances clients et reçus
     Route::middleware('droit:paiements.gerer')->group(function () {
