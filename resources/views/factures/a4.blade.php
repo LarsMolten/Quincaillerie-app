@@ -136,7 +136,7 @@
                     <td>{{ $ligne->produit->nom }}<br><span class="doux petit">{{ $ligne->produit->reference }}</span></td>
                     <td class="droite">{{ format_quantite($ligne->quantite, $ligne->produit->unite?->abreviation) }}</td>
                     <td class="droite">{{ format_ar($ligne->prix_unitaire) }}</td>
-                    <td class="droite doux">{{ (float) $ligne->remise > 0 ? '− '.format_ar($ligne->remise) : '—' }}</td>
+                    <td class="droite doux">{{ (float) $ligne->remise > 0 ? '- '.format_ar($ligne->remise) : '—' }}</td>
                     <td class="droite">{{ format_ar($ligne->total) }}</td>
                 </tr>
             @endforeach
@@ -157,7 +157,7 @@
             <td style="width: 50%;">
                 <table class="totaux">
                     <tr><td class="doux">Sous-total</td><td class="droite">{{ format_ar($vente->sous_total) }}</td></tr>
-                    <tr><td class="doux">Remise</td><td class="droite">{{ (float) $vente->remise > 0 ? '− '.format_ar($vente->remise) : '—' }}</td></tr>
+                    <tr><td class="doux">Remise</td><td class="droite">{{ (float) $vente->remise > 0 ? '- '.format_ar($vente->remise) : '—' }}</td></tr>
                     <tr class="a-payer"><td>Total à payer</td><td class="droite">{{ format_ar($vente->total) }}</td></tr>
                     @if ($tva)
                         <tr><td class="doux petit">dont total HT</td><td class="droite doux petit">{{ format_ar($tva['ht']) }}</td></tr>

@@ -9,6 +9,8 @@ use App\Http\Controllers\DesignSystemeController;
 use App\Http\Controllers\DetteController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\FournisseurController;
+use App\Http\Controllers\InventaireController;
+use App\Http\Controllers\MouvementController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\PreferenceThemeController;
 use App\Http\Controllers\ProduitController;
@@ -92,6 +94,31 @@ Route::middleware('auth')->group(function () {
         Route::post('/factures/{facture}/envoi', [FactureController::class, 'envoyer'])
             ->whereNumber('facture')->middleware('throttle:10,1')->name('factures.envoyer');
         Route::post('/factures/{facture}/partage', [FactureController::class, 'partager'])->whereNumber('facture')->name('factures.partager');
+    });
+
+    // Mouvements de stock : consultation (stock.voir), ajustements manuels (stock.ajuster)
+    Route::middleware('droit:stock.voir')->group(function () {
+        Route::get('/stock/mouvements', [MouvementController::class, 'index'])->name('stock.mouvements');
+        Route::get('/stock/entrees', [MouvementController::class, 'entrees'])->name('stock.entrees');
+        Route::get('/stock/sorties', [MouvementController::class, 'sorties'])->name('stock.sorties');
+        Route::get('/stock/mouvements/export', [MouvementController::class, 'export'])->name('stock.mouvements.export');
+    });
+    Route::middleware('droit:stock.ajuster')->group(function () {
+        Route::get('/stock/produits', [MouvementController::class, 'produits'])->name('stock.produits');
+        Route::post('/stock/ajustements', [MouvementController::class, 'ajuster'])->name('stock.ajustements.store');
+    });
+
+    // Inventaires physiques (un inventaire validé n'est plus modifiable : aucune route de suppression)
+    Route::middleware('droit:inventaires.gerer')->group(function () {
+        Route::get('/inventaires', [InventaireController::class, 'index'])->name('inventaires.index');
+        Route::post('/inventaires', [InventaireController::class, 'store'])->name('inventaires.store');
+        Route::get('/inventaires/{inventaire}', [InventaireController::class, 'show'])->whereNumber('inventaire')->name('inventaires.show');
+        Route::patch('/inventaires/{inventaire}/lignes/{ligne}', [InventaireController::class, 'compter'])
+            ->whereNumber(['inventaire', 'ligne'])->scopeBindings()->name('inventaires.lignes.update');
+        Route::post('/inventaires/{inventaire}/import', [InventaireController::class, 'importer'])->whereNumber('inventaire')->name('inventaires.import');
+        Route::post('/inventaires/{inventaire}/validation', [InventaireController::class, 'valider'])->whereNumber('inventaire')->name('inventaires.valider');
+        Route::get('/inventaires/{inventaire}/{document}', [InventaireController::class, 'pdf'])
+            ->whereNumber('inventaire')->whereIn('document', ['feuille', 'rapport'])->name('inventaires.pdf');
     });
 
     // Retours clients et fournisseurs (« nouveau » et « documents » déclarés avant /retours/{retour})

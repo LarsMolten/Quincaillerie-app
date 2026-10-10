@@ -64,7 +64,7 @@
     <table>
         @if ((float) $vente->remise > 0)
             <tr><td>Sous-total</td><td class="droite">{{ format_ar($vente->sous_total) }}</td></tr>
-            <tr><td>Remise</td><td class="droite">− {{ format_ar($vente->remise) }}</td></tr>
+            <tr><td>Remise</td><td class="droite">- {{ format_ar($vente->remise) }}</td></tr>
         @endif
         <tr class="total"><td>TOTAL</td><td class="droite">{{ format_ar($vente->total) }}</td></tr>
         @if ($tva)

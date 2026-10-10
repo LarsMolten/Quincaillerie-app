@@ -109,6 +109,9 @@
 
         {{-- Historique des mouvements --}}
         <x-carte titre="Mouvements de stock" description="Les 15 derniers" class="lg:col-span-1 lg:row-span-2" :padding="false">
+            @droit('stock.voir')
+                <x-slot:actions><x-bouton variante="fantome" taille="sm" :href="route('stock.mouvements', ['produit' => $produit->id])">Tout voir</x-bouton></x-slot:actions>
+            @enddroit
             @if ($mouvements->isEmpty())
                 <x-etat-vide icone="history" titre="Aucun mouvement" texte="Les entrées et sorties de stock apparaîtront ici." />
             @else

@@ -1,7 +1,9 @@
 import Alpine from 'alpinejs';
+import ajustementStock from './composants/ajustement-stock';
 import assistantRetour from './composants/assistant-retour';
 import bouton from './composants/bouton';
 import caisse from './composants/caisse';
+import comptageInventaire from './composants/comptage-inventaire';
 import coquille from './composants/coquille';
 import factures from './composants/factures';
 import formulaireProduit from './composants/formulaire-produit';
@@ -32,6 +34,8 @@ document.addEventListener('alpine:init', () => {
     factures(Alpine);
     reglements(Alpine);
     assistantRetour(Alpine);
+    ajustementStock(Alpine);
+    comptageInventaire(Alpine);
 });
 
 window.Alpine = Alpine;

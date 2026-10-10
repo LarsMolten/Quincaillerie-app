@@ -60,4 +60,30 @@ class MouvementStock extends Model
     {
         return $this->morphTo();
     }
+
+    /**
+     * Libellé du document d'origine et son adresse si l'utilisateur peut l'ouvrir
+     * (null : ajustement manuel sans document).
+     *
+     * @return array{libelle: string, url: ?string}|null
+     */
+    public function lienDocument(?Utilisateur $utilisateur): ?array
+    {
+        $document = $this->reference;
+
+        [$libelle, $route, $droit] = match (true) {
+            $document instanceof Vente => [$document->numero, 'ventes.show', 'ventes.voir'],
+            $document instanceof Achat => [$document->numero, 'achats.show', 'achats.voir'],
+            $document instanceof Retour => [$document->numero, 'retours.show', 'retours.gerer'],
+            $document instanceof Inventaire => [$document->numero, 'inventaires.show', 'inventaires.gerer'],
+            $document instanceof Produit => ['Stock initial', 'produits.show', 'produits.voir'],
+            default => [null, null, null],
+        };
+
+        if ($libelle === null) {
+            return null;
+        }
+
+        return ['libelle' => $libelle, 'url' => $utilisateur?->can($droit) ? route($route, $document) : null];
+    }
 }

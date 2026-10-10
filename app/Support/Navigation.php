@@ -30,10 +30,10 @@ class Navigation
             ['titre' => 'Stock', 'entrees' => [
                 $e('Produits', 'package', 'produits.index', '/produits', 'produits.voir', false),
                 $e('Catégories', 'tags', 'categories.index', '/categories', 'categories.gerer', false, ['unites.*']),
-                $e('Entrées', 'download', 'stock.entrees', '/stock/entrees', 'stock.ajuster'),
-                $e('Sorties', 'upload', 'stock.sorties', '/stock/sorties', 'stock.ajuster'),
-                $e('Mouvements', 'history', 'stock.mouvements', '/stock/mouvements', 'stock.voir'),
-                $e('Inventaire', 'clipboard-list', 'inventaires.index', '/inventaires', 'inventaires.gerer'),
+                $e('Entrées', 'download', 'stock.entrees', '/stock/entrees', 'stock.voir', false),
+                $e('Sorties', 'upload', 'stock.sorties', '/stock/sorties', 'stock.voir', false),
+                $e('Mouvements', 'history', 'stock.mouvements', '/stock/mouvements', 'stock.voir', false),
+                $e('Inventaire', 'clipboard-list', 'inventaires.index', '/inventaires', 'inventaires.gerer', false),
             ]],
             ['titre' => 'Ventes', 'entrees' => [
                 $e('Nouvelle vente', 'shopping-cart', 'ventes.create', '/ventes/nouvelle', 'ventes.creer', false),
