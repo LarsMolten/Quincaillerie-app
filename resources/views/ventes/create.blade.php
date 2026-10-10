@@ -44,8 +44,8 @@
                 <p class="text-sm text-texte-doux">Vendeur : {{ auth()->user()->nom }}</p>
             </div>
             <div class="flex items-center gap-2">
-                <p x-show="! enLigne" x-cloak role="status" class="inline-flex items-center gap-2 rounded-full bg-danger-doux px-3 py-1.5 text-sm font-medium text-danger-texte">
-                    <x-icone nom="wifi-off" taille="size-4" /> Hors ligne : ticket conservé, validation impossible
+                <p x-show="serveurInjoignable" x-cloak role="status" class="inline-flex items-center gap-2 rounded-full bg-danger-doux px-3 py-1.5 text-sm font-medium text-danger-texte">
+                    <x-icone nom="wifi-off" taille="size-4" /> Serveur injoignable : ticket conservé, réessayez
                 </p>
                 <x-bouton type="button" variante="secondaire" taille="sm" icone="keyboard" x-on:click="$dispatch('ouvrir-modal', 'caisse-aide')">
                     Raccourcis <kbd class="{{ $classeTouche }} ml-1">F1</kbd>
