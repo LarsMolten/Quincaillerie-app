@@ -3,7 +3,7 @@
  * - JS : window.toast('succes', 'Produit enregistré.')
  * - Alpine : $dispatch('toast', { type: 'erreur', message: '…' })
  * - Laravel : session()->flash('succes' | 'erreur' | 'info', '…'), lu au chargement de la page ;
- *   lien facultatif : ->with('toast_lien', ['libelle' => …, 'url' => …, 'nouvelOnglet' => true]).
+ *   lien facultatif : ->with('toast_lien', ['libelle' => …, 'url' => …, 'nouvelOnglet' => true, 'pdf' => true]).
  * - Action : window.toast('info', 'Ligne retirée.', 5000, { libelle: 'Annuler', action: () => … }) (bouton qui ferme le toast).
  */
 const DUREE_PAR_DEFAUT = 5000;

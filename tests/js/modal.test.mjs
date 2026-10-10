@@ -7,17 +7,8 @@
  */
 import { after, before, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { Window } from 'happy-dom';
-
-const fenetre = new Window({ url: 'http://localhost/' });
-// Globales du navigateur attendues par Alpine (classes du DOM, document, window…), sans écraser celles de Node
-Object.defineProperty(globalThis, 'window', { value: fenetre, configurable: true, writable: true });
-for (const nom of Object.getOwnPropertyNames(fenetre)) {
-    const evenement = ['Event', 'CustomEvent', 'EventTarget'].includes(nom); // ceux de Node sont refusés par le DOM simulé
-    if ((evenement || !(nom in globalThis)) && (/^[A-Z]/.test(nom) || ['document', 'navigator', 'requestAnimationFrame', 'getComputedStyle'].includes(nom))) {
-        Object.defineProperty(globalThis, nom, { value: fenetre[nom], configurable: true, writable: true });
-    }
-}
+import { demarrer, fenetre } from './environnement.mjs';
+import modal from '../../resources/js/composants/modal.js';
 
 // Même structure que resources/views/components/modal.blade.php
 const MODALE = `
@@ -33,7 +24,6 @@ const MODALE = `
         </div>
     </dialog>`;
 
-let Alpine;
 const dialogue = () => document.getElementById('essai');
 const cliquer = (id) => document.getElementById(id).dispatchEvent(new fenetre.MouseEvent('click', { bubbles: true }));
 const ouvrir = async () => {
@@ -43,14 +33,7 @@ const ouvrir = async () => {
 };
 
 describe('Composant modal', () => {
-    before(async () => {
-        document.body.innerHTML = MODALE;
-        // Build ESM (celui utilisé par Vite) : l'entrée « main » du paquet est en CommonJS
-        Alpine = (await import('alpinejs/dist/module.esm.js')).default;
-        (await import('../../resources/js/composants/modal.js')).default(Alpine);
-        Alpine.start();
-        await fenetre.happyDOM.waitUntilComplete();
-    });
+    before(() => demarrer(MODALE, [modal]));
 
     after(() => fenetre.happyDOM.abort());
 

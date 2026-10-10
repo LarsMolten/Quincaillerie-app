@@ -16,6 +16,7 @@ use App\Models\Parametre;
 use App\Models\Produit;
 use App\Services\AchatService;
 use App\Services\PaiementService;
+use App\Support\ReponsePdf;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -121,7 +122,7 @@ class AchatController extends Controller
 
         return to_route('achats.show', $achat)
             ->with('succes', "Achat {$achat->numero} enregistré : stock mis à jour.")
-            ->with('toast_lien', ['libelle' => 'Voir le bon d\'achat', 'url' => route('achats.bon', $achat), 'nouvelOnglet' => true]);
+            ->with('toast_lien', ['libelle' => 'Voir le bon d\'achat', 'url' => route('achats.bon', $achat), 'nouvelOnglet' => true, 'pdf' => true]);
     }
 
     public function show(Achat $achat): View
@@ -138,11 +139,11 @@ class AchatController extends Controller
     }
 
     /** Bon d'achat en PDF (DomPDF : tables et couleurs hexadécimales). */
-    public function bon(Achat $achat): Response
+    public function bon(Request $requete, Achat $achat): Response
     {
         $achat->load(['fournisseur', 'utilisateur', 'lignes.produit.unite', 'paiements']);
 
-        return Pdf::loadView('achats.bon', [
+        $pdf = Pdf::loadView('achats.bon', [
             'achat' => $achat,
             'entreprise' => [
                 'nom' => Parametre::valeur('nom_entreprise', config('app.name')),
@@ -151,7 +152,9 @@ class AchatController extends Controller
                 'email' => Parametre::valeur('email'),
                 'nif_stat' => Parametre::valeur('nif_stat'),
             ],
-        ])->setPaper('a4')->stream("bon-achat-{$achat->numero}.pdf");
+        ])->setPaper('a4');
+
+        return ReponsePdf::depuis($requete, $pdf, "bon-achat-{$achat->numero}.pdf");
     }
 
     /** Recherche de produits actifs pour la saisie (nom, référence, code-barres exact en premier). */

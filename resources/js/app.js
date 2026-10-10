@@ -6,6 +6,7 @@ import formulaireProduit from './composants/formulaire-produit';
 import listeDynamique from './composants/liste-dynamique';
 import menu from './composants/menu';
 import modal from './composants/modal';
+import ouvrirPdf from './composants/ouvrir-pdf';
 import recherche from './composants/recherche';
 import saisieAchat from './composants/saisie-achat';
 import theme from './composants/theme';
@@ -19,6 +20,7 @@ document.addEventListener('alpine:init', () => {
     menu(Alpine);
     recherche(Alpine);
     bouton(Alpine);
+    ouvrirPdf(Alpine);
     coquille(Alpine);
     listeDynamique(Alpine);
     formulaireProduit(Alpine);

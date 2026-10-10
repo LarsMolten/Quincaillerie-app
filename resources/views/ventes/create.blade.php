@@ -427,7 +427,7 @@
                     <p x-show="reussite.reste > 0" class="chiffres mt-4 rounded-controle bg-alerte-doux p-3 text-sm font-medium text-alerte-texte"
                        x-text="'Reste à payer : ' + ar(reussite.reste) + ' (' + reussite.client + ')'"></p>
                     <div class="mt-6 grid gap-2 sm:grid-cols-2">
-                        <x-bouton variante="secondaire" icone="printer" x-bind:href="reussite.url_ticket" href="#" target="_blank">Imprimer le ticket</x-bouton>
+                        <x-bouton variante="secondaire" icone="printer" x-bind:href="reussite.url_ticket" href="#" target="_blank" x-ouvrir-pdf="reussite.url_ticket">Imprimer le ticket</x-bouton>
                         <x-bouton type="button" id="caisse-nouvelle-vente" icone="plus" x-on:click="nouvelleVente()">Nouvelle vente</x-bouton>
                     </div>
                     <a x-bind:href="reussite.url_vente" class="mt-4 inline-block text-sm font-medium text-lien underline-offset-4 hover:underline">Voir le détail de la vente</a>

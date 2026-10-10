@@ -13,7 +13,7 @@
                    :description="'Le '.$vente->date_vente->translatedFormat('j F Y à H:i').' · vendeur : '.$vente->utilisateur->nom"
                    :fil="['Tableau de bord' => route('accueil'), 'Ventes' => route('ventes.index'), $vente->numero => null]">
         <x-slot:actions>
-            <x-bouton :href="route('ventes.ticket', $vente)" target="_blank" variante="secondaire" icone="printer">Ticket</x-bouton>
+            <x-bouton :href="route('ventes.ticket', $vente)" target="_blank" x-data x-ouvrir-pdf variante="secondaire" icone="printer">Ticket</x-bouton>
             @if (! $annulee)
                 @droit('ventes.annuler')
                     <x-bouton type="button" variante="danger" icone="ban" x-data x-on:click="$dispatch('ouvrir-modal', 'modale-annulation')">Annuler la vente</x-bouton>

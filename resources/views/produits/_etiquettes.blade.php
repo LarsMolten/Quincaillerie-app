@@ -6,7 +6,7 @@
      x-on:etiquettes-produits.window="produits = $event.detail.produits; $dispatch('ouvrir-modal', 'modale-etiquettes')">
     <x-modal id="modale-etiquettes" titre="Imprimer des étiquettes" taille="sm"
              description="Planche A4 de 24 étiquettes avec nom, prix et code-barres.">
-        <form method="GET" action="{{ route('produits.etiquettes') }}" target="_blank" class="space-y-5"
+        <form method="GET" action="{{ route('produits.etiquettes') }}" target="_blank" x-ouvrir-pdf class="space-y-5"
               x-on:submit="$nextTick(() => $dispatch('fermer-modal', 'modale-etiquettes'))">
             <template x-for="produit in produits" x-bind:key="produit">
                 <input type="hidden" name="produits[]" x-bind:value="produit">

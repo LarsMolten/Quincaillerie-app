@@ -12,6 +12,7 @@ use App\Models\Unite;
 use App\Services\PhotoProduitService;
 use App\Services\ProduitService;
 use App\Support\Ean13;
+use App\Support\ReponsePdf;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -189,12 +190,12 @@ class ProduitController extends Controller
                 'code' => $produit->code_barres ? $this->dessinerCodeBarres($produit->code_barres, 'png') : null,
             ]));
 
-        return Pdf::loadView('produits.etiquettes', [
+        $pdf = Pdf::loadView('produits.etiquettes', [
             'pages' => $etiquettes->chunk(24),
             'entreprise' => Parametre::where('cle', 'nom_entreprise')->value('valeur') ?? config('app.name'),
-        ])
-            ->setPaper('a4')
-            ->stream('etiquettes-'.Carbon::now()->format('Ymd-His').'.pdf');
+        ])->setPaper('a4');
+
+        return ReponsePdf::depuis($requete, $pdf, 'etiquettes-'.Carbon::now()->format('Ymd-His').'.pdf');
     }
 
     /** Listes du panneau de création/modification. */

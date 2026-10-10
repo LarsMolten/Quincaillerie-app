@@ -13,7 +13,7 @@
                    :description="'Du '.$achat->date_achat->translatedFormat('j F Y').' · saisi par '.$achat->utilisateur->nom"
                    :fil="['Tableau de bord' => route('accueil'), 'Achats' => route('achats.index'), $achat->numero => null]">
         <x-slot:actions>
-            <x-bouton :href="route('achats.bon', $achat)" target="_blank" variante="secondaire" icone="printer">Bon d'achat</x-bouton>
+            <x-bouton :href="route('achats.bon', $achat)" target="_blank" x-data x-ouvrir-pdf variante="secondaire" icone="printer">Bon d'achat</x-bouton>
             @if ($peutPayer)
                 @droit('achats.creer')
                     <x-bouton type="button" icone="banknote" x-data x-on:click="$dispatch('ouvrir-modal', 'modale-paiement')">Ajouter un paiement</x-bouton>

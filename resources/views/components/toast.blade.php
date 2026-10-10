@@ -37,7 +37,14 @@
                             <x-icone nom="undo-2" taille="size-3.5" /> <span x-text="toast.lien.libelle"></span>
                         </button>
                     </template>
-                    <template x-if="toast.lien?.url">
+                    {{-- Lien vers un PDF : ouvert via x-ouvrir-pdf (non intercepté par les gestionnaires de téléchargement) --}}
+                    <template x-if="toast.lien?.url && toast.lien.pdf">
+                        <a x-bind:href="toast.lien.url" target="_blank" x-ouvrir-pdf
+                           class="mt-1 inline-flex items-center gap-1 font-semibold text-lien underline-offset-4 hover:underline">
+                            <span x-text="toast.lien.libelle"></span> <x-icone nom="external-link" taille="size-3.5" />
+                        </a>
+                    </template>
+                    <template x-if="toast.lien?.url && ! toast.lien.pdf">
                         <a x-bind:href="toast.lien.url" x-bind:target="toast.lien.nouvelOnglet ? '_blank' : null"
                            class="mt-1 inline-flex items-center gap-1 font-semibold text-lien underline-offset-4 hover:underline">
                             <span x-text="toast.lien.libelle"></span> <x-icone nom="external-link" taille="size-3.5" />

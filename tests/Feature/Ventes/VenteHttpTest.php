@@ -74,6 +74,19 @@ class VenteHttpTest extends TestCase
             ->assertSee('caisse-ticket-'.auth()->id());
     }
 
+    /**
+     * Les PDF (ticket, bon d'achat) ne s'ouvrent jamais par navigation directe : un gestionnaire de
+     * téléchargement (IDM…) l'intercepterait et refermerait l'onglet. Voir tests/js/ouvrir-pdf.test.mjs.
+     */
+    public function test_les_liens_pdf_passent_par_x_ouvrir_pdf(): void
+    {
+        $this->get(route('ventes.create'))->assertSee('x-ouvrir-pdf="reussite.url_ticket"', false);
+
+        $vente = $this->vente();
+        $this->get(route('ventes.show', $vente))->assertSee('x-ouvrir-pdf', false);
+        $this->get(route('ventes.index'))->assertSee('x-ouvrir-pdf', false);
+    }
+
     public function test_catalogue_json_actifs_categorie_et_code_barres(): void
     {
         $autreCategorie = Categorie::factory()->create();
@@ -189,6 +202,10 @@ class VenteHttpTest extends TestCase
 
         $pdf = $this->get(route('ventes.ticket', $vente))->assertOk()->assertHeader('content-type', 'application/pdf');
         $this->assertStringStartsWith('%PDF', $pdf->getContent());
+
+        // Demandé par x-ouvrir-pdf : PDF en base64 dans du JSON, qu'un gestionnaire de téléchargement n'intercepte pas
+        $json = $this->getJson(route('ventes.ticket', $vente))->assertOk()->assertJsonPath('nom', "ticket-{$vente->numero}.pdf");
+        $this->assertStringStartsWith('%PDF', base64_decode($json->json('pdf')));
     }
 
     public function test_annulation_par_la_route_avec_motif_obligatoire(): void

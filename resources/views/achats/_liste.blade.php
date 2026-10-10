@@ -52,7 +52,7 @@
                 <x-tableau.cellule libelle="Actions" alignement="droite">
                     <x-menu-actions :libelle="'Actions pour l\'achat '.$achat->numero">
                         <x-menu-actions.element icone="eye" :href="route('achats.show', $achat)">Voir le détail</x-menu-actions.element>
-                        <x-menu-actions.element icone="printer" :href="route('achats.bon', $achat)" target="_blank">Bon d'achat (PDF)</x-menu-actions.element>
+                        <x-menu-actions.element icone="printer" :href="route('achats.bon', $achat)" target="_blank" x-ouvrir-pdf>Bon d'achat (PDF)</x-menu-actions.element>
                     </x-menu-actions>
                 </x-tableau.cellule>
             </x-tableau.ligne>
