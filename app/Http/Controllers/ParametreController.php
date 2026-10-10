@@ -62,7 +62,7 @@ class ParametreController extends Controller
 
         match ($onglet) {
             'entreprise' => $this->entreprise($requete, $donnees),
-            'ventes' => $this->ventes($donnees),
+            'ventes' => $this->parametres->enregistrerVentes($donnees),
             'facturation' => $this->parametres->enregistrer($donnees),
             'apparence' => $this->parametres->enregistrer($donnees),
         };
@@ -87,15 +87,6 @@ class ParametreController extends Controller
         } elseif ($requete->boolean('retirer_logo')) {
             $this->parametres->retirerLogo();
         }
-    }
-
-    private function ventes(array $donnees): void
-    {
-        $this->parametres->enregistrer([
-            'remise_max_pourcentage' => $donnees['remise_max_pourcentage'],
-            'stock_negatif_autorise' => (bool) ($donnees['stock_negatif_autorise'] ?? false),
-        ]);
-        $this->parametres->enregistrerRemises($donnees['remises'] ?? []);
     }
 
     private function logoExiste(): bool

@@ -125,6 +125,26 @@ class ParametreTest extends TestCase
             ->assertSessionHasErrors(['remise_max_pourcentage', 'remises.'.$vendeur->id]);
     }
 
+    public function test_onglet_ventes_tout_ou_rien(): void
+    {
+        $vendeur = Role::where('nom', RoleSeeder::VENDEUR)->firstOrFail();
+        // Échec à l'écriture des remises par rôle (ex. base non migrée : colonne remise_max absente)
+        Role::saving(fn () => throw new \RuntimeException('Échec simulé'));
+
+        $this->withoutExceptionHandling();
+        try {
+            $this->put(route('parametres.update', 'ventes'), ['remise_max_pourcentage' => '8', 'remises' => [$vendeur->id => '3'], 'stock_negatif_autorise' => '1']);
+            $this->fail('Échec attendu.');
+        } catch (\RuntimeException $erreur) {
+            $this->assertSame('Échec simulé', $erreur->getMessage());
+        }
+
+        // Rien n'est enregistré à moitié : la remise générale et le stock négatif restent inchangés
+        $this->assertSame('10', $this->valeur('remise_max_pourcentage'));
+        $this->assertFalse(Parametre::actif('stock_negatif_autorise'));
+        $this->assertSame(0, JournalActivite::where('action', 'parametre.modifie')->count());
+    }
+
     public function test_apparence_theme_par_defaut_et_accent_ecran_et_pdf(): void
     {
         $this->put(route('parametres.update', 'apparence'), ['theme_defaut' => 'sombre', 'couleur_accent' => 'bleu'])->assertSessionHas('succes');

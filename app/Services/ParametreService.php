@@ -38,6 +38,25 @@ class ParametreService
     }
 
     /**
+     * Onglet Ventes : paramètres (remise générale, stock négatif) et remises par rôle,
+     * dans une seule transaction (tout ou rien : jamais d'enregistrement partiel).
+     *
+     * @param  array{remise_max_pourcentage: float|string, stock_negatif_autorise?: bool|string, remises?: array<int|string, float|string|null>}  $donnees
+     */
+    public function enregistrerVentes(array $donnees): void
+    {
+        DB::transaction(function () use ($donnees) {
+            $this->enregistrer([
+                'remise_max_pourcentage' => $donnees['remise_max_pourcentage'],
+                'stock_negatif_autorise' => (bool) ($donnees['stock_negatif_autorise'] ?? false),
+            ]);
+            $this->enregistrerRemises($donnees['remises'] ?? []);
+        });
+
+        Parametre::viderCache();
+    }
+
+    /**
      * Remise maximale par rôle (en %, null = plafond général).
      *
      * @param  array<int|string, float|string|null>  $remises  role_id => remise
