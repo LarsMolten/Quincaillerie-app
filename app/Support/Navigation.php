@@ -15,12 +15,13 @@ use Illuminate\Support\Facades\Route;
 class Navigation
 {
     /**
-     * @return list<array{titre: ?string, entrees: list<array{libelle: string, icone: string, route: string, url: string, droit: ?string, bientot: bool, aussi: list<string>}>}>
+     * @return list<array{titre: ?string, entrees: list<array{libelle: string, icone: string, route: string, url: string, droit: string|list<string>|null, bientot: bool, aussi: list<string>}>}>
      */
     public static function sections(): array
     {
         // aussi : autres routes qui rendent l'entrée active (ex. les unités, gérées depuis « Catégories »)
-        $e = fn (string $libelle, string $icone, string $route, string $url, ?string $droit, bool $bientot = true, array $aussi = []) => compact('libelle', 'icone', 'route', 'url', 'droit', 'bientot', 'aussi');
+        // droit : un code, une liste de codes (tous requis) ou null (tout utilisateur connecté)
+        $e = fn (string $libelle, string $icone, string $route, string $url, string|array|null $droit, bool $bientot = true, array $aussi = []) => compact('libelle', 'icone', 'route', 'url', 'droit', 'bientot', 'aussi');
 
         return [
             ['titre' => null, 'entrees' => [
@@ -48,13 +49,13 @@ class Navigation
             ]],
             ['titre' => 'Clients', 'entrees' => [
                 $e('Clients', 'users', 'clients.index', '/clients', 'clients.gerer', false),
-                $e('Crédits', 'hand-coins', 'clients.credits', '/clients/credits', 'clients.gerer', false),
                 $e('Historique', 'history', 'clients.historique', '/clients/historique', 'clients.gerer'),
             ]],
             ['titre' => 'Finances', 'entrees' => [
-                $e('Paiements', 'credit-card', 'paiements.index', '/paiements', 'paiements.gerer'),
+                $e('Paiements', 'credit-card', 'paiements.index', '/paiements', 'paiements.gerer', false),
+                $e('Créances', 'hand-coins', 'creances.index', '/creances', 'paiements.gerer', false),
+                $e('Dettes fournisseurs', 'banknote', 'dettes.index', '/dettes', ['paiements.gerer', 'achats.voir'], false),
                 $e('Dépenses', 'wallet', 'depenses.index', '/depenses', 'depenses.gerer'),
-                $e('Créances', 'banknote', 'creances.index', '/creances', 'finances.voir'),
                 $e('Résultats', 'chart-line', 'resultats.index', '/resultats', 'finances.voir'),
             ]],
             ['titre' => 'Rapports', 'entrees' => [
@@ -135,7 +136,11 @@ class Navigation
 
     private static function autorisee(?Utilisateur $utilisateur, array $entree): bool
     {
-        return $entree['droit'] === null ? $utilisateur !== null : (bool) $utilisateur?->can($entree['droit']);
+        if ($entree['droit'] === null) {
+            return $utilisateur !== null;
+        }
+
+        return $utilisateur !== null && collect((array) $entree['droit'])->every(fn (string $code) => $utilisateur->can($code));
     }
 
     /**

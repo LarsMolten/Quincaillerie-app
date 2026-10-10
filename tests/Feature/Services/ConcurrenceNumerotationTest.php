@@ -7,6 +7,7 @@ use App\Models\Achat;
 use App\Models\Client;
 use App\Models\Facture;
 use App\Models\Fournisseur;
+use App\Models\Paiement;
 use App\Models\Produit;
 use App\Models\Utilisateur;
 use App\Models\Vente;
@@ -71,7 +72,24 @@ class ConcurrenceNumerotationTest extends TestCase
         $this->assertSame($this->attendus('FAC', $total), $this->numeros($bilans, 'factures'), 'Numéros de facture sans trou.');
         $this->assertSame($total, Vente::count());
         $this->assertSame($total, Facture::count());
+        $this->assertSame($this->attendus('REC', $total), Paiement::orderBy('numero')->pluck('numero')->all(), 'Numéros de reçu sans trou.');
         $this->assertEquals(100 - $total, $produit->fresh()->stock_actuel);
+    }
+
+    public function test_paiements_simultanes_sur_une_meme_vente_sans_depassement_ni_doublon(): void
+    {
+        $utilisateur = Utilisateur::factory()->create();
+        $reste = 15;
+        $vente = Vente::factory()->create(['total' => $reste * 1000, 'montant_paye' => 0, 'reste_a_payer' => $reste * 1000]);
+
+        // 2 × 10 tentatives de 1 000 Ar pour un reste de 15 000 Ar : 15 acceptées, 5 refusées
+        $bilans = $this->lancer('paiements.php', [$vente->id, $utilisateur->id]);
+
+        $this->assertSame($this->attendus('REC', $reste), $this->numeros($bilans, 'numeros'), 'Numéros de reçu uniques et sans trou.');
+        $this->assertCount(2 * self::DOCUMENTS_PAR_PROCESSUS - $reste, array_merge(...array_column($bilans, 'refus')), 'Les paiements en trop sont refusés.');
+        $this->assertEquals(0, $vente->fresh()->reste_a_payer, 'Le reste n\'est jamais dépassé.');
+        $this->assertEquals($reste * 1000, $vente->fresh()->montant_paye);
+        $this->assertEquals($reste * 1000, Paiement::sum('montant'));
     }
 
     /**

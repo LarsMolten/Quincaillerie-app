@@ -9,6 +9,7 @@
     - inverse   : true si une baisse est une bonne nouvelle (ex. dépenses)
     - serie     : liste de nombres pour le mini-graphique (sparkline), vide pour masquer
     - icone     : icône Lucide
+    Slot (facultatif) : précision affichée sous la valeur (ex. « 12 paiement(s) »).
 
     Exemple : <x-carte-stat libelle="Ventes du jour" :valeur="format_ar(1250000)" :tendance="8.4" :serie="$serie" icone="shopping-cart" />
 --}}
@@ -76,5 +77,9 @@
             <span class="sr-only">{{ ['hausse' => 'En hausse de', 'baisse' => 'En baisse de', 'stable' => 'Stable,'][$sens] }} {{ $pourcentage }}</span>
             <span class="whitespace-nowrap font-normal text-texte-doux">{{ $periode }}</span>
         </p>
+    @endif
+
+    @if ($slot->isNotEmpty())
+        <div class="-mt-2 text-sm text-texte-doux">{{ $slot }}</div>
     @endif
 </article>

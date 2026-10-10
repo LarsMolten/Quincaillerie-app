@@ -15,7 +15,7 @@
         <x-slot:actions>
             <x-bouton :href="route('achats.bon', $achat)" target="_blank" x-data x-ouvrir-pdf variante="secondaire" icone="printer">Bon d'achat</x-bouton>
             @if ($peutPayer)
-                @droit('achats.creer')
+                @droit('paiements.gerer')
                     <x-bouton type="button" icone="banknote" x-data x-on:click="$dispatch('ouvrir-modal', 'modale-paiement')">Ajouter un paiement</x-bouton>
                 @enddroit
             @endif
@@ -75,13 +75,7 @@
             @else
                 <ul class="divide-y divide-bordure" role="list">
                     @foreach ($achat->paiements as $paiement)
-                        <li class="flex items-center justify-between gap-3 px-carte py-3 text-sm">
-                            <div>
-                                <p class="font-medium">{{ $paiement->mode->libelle() }}@if ($paiement->reference) · {{ $paiement->reference }}@endif</p>
-                                <p class="text-xs text-texte-doux">{{ $paiement->date_paiement->translatedFormat('j M Y, H:i') }} · {{ $paiement->utilisateur->nom }}</p>
-                            </div>
-                            <p class="chiffres font-semibold">{{ format_ar($paiement->montant) }}</p>
-                        </li>
+                        @include('paiements._element')
                     @endforeach
                 </ul>
             @endif
@@ -128,7 +122,7 @@
     </div>
 
     {{-- Paiement ultérieur --}}
-    @if ($peutPayer && auth()->user()->can('achats.creer'))
+    @if ($peutPayer && auth()->user()->can('paiements.gerer'))
         <x-modal id="modale-paiement" titre="Ajouter un paiement" taille="sm"
                  :description="'Reste à payer : '.format_ar($achat->reste_a_payer)">
             <form method="POST" action="{{ route('achats.paiements.store', $achat) }}" x-chargement-envoi novalidate class="space-y-4">

@@ -173,7 +173,8 @@ class AchatHttpTest extends TestCase
         $achat = $this->achat();
 
         $this->post(route('achats.paiements.store', $achat), ['montant' => '330 000', 'mode' => 'virement', 'date_paiement' => today()->toDateString()])
-            ->assertSessionHas('succes', "Paiement enregistré : l'achat {$achat->numero} est soldé.");
+            ->assertSessionHas('succes', 'Paiement REC-'.now()->year."-00001 enregistré : {$achat->numero} est soldé.")
+            ->assertSessionHas('toast_lien', fn (array $lien) => $lien['libelle'] === 'Imprimer le reçu' && $lien['pdf'] === true);
 
         $this->post(route('achats.paiements.store', $achat), ['montant' => '1000', 'mode' => 'especes', 'date_paiement' => today()->toDateString()])
             ->assertSessionHas('erreur');

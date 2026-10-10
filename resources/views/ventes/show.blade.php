@@ -6,6 +6,7 @@
 @php
     $annulee = $vente->statut === \App\Enums\StatutVente::Annulee;
     $client = $vente->client;
+    $peutEncaisser = ! $annulee && (float) $vente->reste_a_payer > 0 && auth()->user()->can('paiements.gerer');
 @endphp
 
 @section('page')
@@ -14,6 +15,9 @@
                    :fil="['Tableau de bord' => route('accueil'), 'Ventes' => route('ventes.index'), $vente->numero => null]">
         <x-slot:actions>
             <x-bouton :href="route('ventes.ticket', $vente)" target="_blank" x-data x-ouvrir-pdf variante="secondaire" icone="printer">Ticket</x-bouton>
+            @if ($peutEncaisser)
+                <x-bouton type="button" icone="hand-coins" x-data x-on:click="$dispatch('ouvrir-modal', 'modale-paiement')">Encaisser</x-bouton>
+            @endif
             @if (! $annulee)
                 @droit('ventes.annuler')
                     <x-bouton type="button" variante="danger" icone="ban" x-data x-on:click="$dispatch('ouvrir-modal', 'modale-annulation')">Annuler la vente</x-bouton>
@@ -96,13 +100,7 @@
             @else
                 <ul class="divide-y divide-bordure" role="list">
                     @foreach ($vente->paiements as $paiement)
-                        <li class="flex items-center justify-between gap-3 px-carte py-3 text-sm">
-                            <div>
-                                <p class="font-medium">{{ $paiement->mode->libelle() }}@if ($paiement->reference) · {{ $paiement->reference }}@endif</p>
-                                <p class="text-xs text-texte-doux">{{ $paiement->date_paiement->translatedFormat('j M Y, H:i') }} · {{ $paiement->utilisateur->nom }}</p>
-                            </div>
-                            <p class="chiffres font-semibold">{{ format_ar($paiement->montant) }}</p>
-                        </li>
+                        @include('paiements._element')
                     @endforeach
                 </ul>
             @endif
@@ -149,6 +147,29 @@
             </ul>
         </x-carte>
     </div>
+
+    {{-- Encaissement ultérieur (vente à crédit ou partielle) --}}
+    @if ($peutEncaisser)
+        <x-modal id="modale-paiement" titre="Encaisser" taille="sm"
+                 :description="'Reste à payer : '.format_ar($vente->reste_a_payer)">
+            <form method="POST" action="{{ route('paiements.ventes.store', $vente) }}" x-chargement-envoi novalidate class="space-y-4">
+                @csrf
+                <x-champ nom="montant" label="Montant" type="number" min="1" :max="(float) $vente->reste_a_payer" step="1" inputmode="numeric"
+                         suffixe="Ar" montant :valeur="old('montant', (float) $vente->reste_a_payer)" requis />
+                <x-select nom="mode" label="Mode de paiement" :valeur="old('mode', 'especes')"
+                          :options="collect(\App\Enums\ModePaiement::encaissements())->mapWithKeys(fn ($m) => [$m->value => $m->libelle()])" requis />
+                <x-champ nom="reference" label="Référence" placeholder="N° de chèque, de transaction…" :valeur="old('reference')" />
+                <x-champ nom="date_paiement" label="Date" type="date" :valeur="old('date_paiement', today()->toDateString())" max="{{ today()->toDateString() }}" requis />
+                <div class="-mx-6 -mb-6 flex flex-col-reverse gap-3 border-t border-bordure px-6 py-4 sm:flex-row sm:justify-end">
+                    <x-bouton type="button" variante="secondaire" x-on:click="$dispatch('fermer-modal', 'modale-paiement')">Annuler</x-bouton>
+                    <x-bouton icone="save">Enregistrer le paiement</x-bouton>
+                </div>
+            </form>
+        </x-modal>
+        @if ($errors->hasAny(['montant', 'mode', 'reference', 'date_paiement']))
+            <div x-data x-init="$nextTick(() => $dispatch('ouvrir-modal', 'modale-paiement'))"></div>
+        @endif
+    @endif
 
     {{-- Annulation avec motif --}}
     @if (! $annulee && auth()->user()->can('ventes.annuler'))

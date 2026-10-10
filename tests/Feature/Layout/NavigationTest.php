@@ -60,7 +60,7 @@ class NavigationTest extends TestCase
         $libelles = $this->libellesMenu($this->avecRole(RoleSeeder::VENDEUR));
 
         $this->assertEqualsCanonicalizing(
-            ['Tableau de bord', 'Produits', 'Nouvelle vente', 'Liste des ventes', 'Factures', 'Clients', 'Crédits', 'Historique', 'Paiements'],
+            ['Tableau de bord', 'Produits', 'Nouvelle vente', 'Liste des ventes', 'Factures', 'Clients', 'Historique', 'Paiements', 'Créances'],
             $libelles,
         );
 

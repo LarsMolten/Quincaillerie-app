@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * Règlement rattaché à une vente (encaissement) ou à un achat (décaissement).
+ * Numéro de reçu REC-AAAA-NNNNN attribué par PaiementService.
  */
 class Paiement extends Model
 {
@@ -18,6 +19,7 @@ class Paiement extends Model
     protected $table = 'paiements';
 
     protected $fillable = [
+        'numero',
         'payable_type',
         'payable_id',
         'montant',

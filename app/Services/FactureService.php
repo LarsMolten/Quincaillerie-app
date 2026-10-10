@@ -7,10 +7,10 @@ use App\Models\Facture;
 use App\Models\Parametre;
 use App\Models\Vente;
 use App\Support\CodeBarres;
+use App\Support\Entreprise;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as DocumentPdf;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use LogicException;
 
 /**
@@ -105,31 +105,7 @@ class FactureService
             'annulee' => $facture->statut === StatutFacture::Annulee,
             'tva' => $tva,
             'codeBarres' => CodeBarres::pngBase64($facture->numero, 1, 36),
-            'entreprise' => [
-                'nom' => Parametre::valeur('nom_entreprise', config('app.name')),
-                'adresse' => Parametre::valeur('adresse'),
-                'telephone' => Parametre::valeur('telephone'),
-                'email' => Parametre::valeur('email'),
-                'nif_stat' => Parametre::valeur('nif_stat'),
-                'pied' => Parametre::valeur('pied_de_facture'),
-                'logo' => $this->logo(),
-            ],
+            'entreprise' => Entreprise::donnees(),
         ];
-    }
-
-    /** Logo de l'entreprise (paramètre « logo » : chemin sur le disque privé) en data URI, ou null. */
-    private function logo(): ?string
-    {
-        $chemin = trim((string) Parametre::valeur('logo', ''));
-
-        if ($chemin === '' || ! Storage::disk('local')->exists($chemin)) {
-            return null;
-        }
-
-        $type = Storage::disk('local')->mimeType($chemin);
-
-        return in_array($type, ['image/png', 'image/jpeg'], true)
-            ? 'data:'.$type.';base64,'.base64_encode(Storage::disk('local')->get($chemin))
-            : null;
     }
 }

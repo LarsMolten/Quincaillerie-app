@@ -62,7 +62,7 @@ Colonnes, variables, méthodes, routes, contrôleurs et vues en français (ex. `
 3. **Verrouillage** : le service de stock utilise `lockForUpdate()` pour éviter les ventes simultanées sur le même stock.
 4. **Stock négatif interdit**, sauf paramètre explicite. Message d'erreur en français.
 5. **Pas de suppression définitive** des données métier : `SoftDeletes` ou champ `actif`.
-6. **Documents** : une facture validée n'est jamais modifiable ; correction par annulation ou retour. Numérotation séquentielle sans trou (`FAC-AAAA-NNNNN`, `VTE-AAAA-NNNNN`, `ACH-AAAA-NNNNN`), remise à zéro chaque année, générée dans la transaction avec verrouillage.
+6. **Documents** : une facture validée n'est jamais modifiable ; correction par annulation ou retour. Numérotation séquentielle sans trou (`FAC-AAAA-NNNNN`, `VTE-AAAA-NNNNN`, `ACH-AAAA-NNNNN`, reçus de paiement `REC-AAAA-NNNNN`), remise à zéro chaque année, générée dans la transaction avec verrouillage.
 7. **Bénéfice** = ventes − coût d'achat des produits vendus (`lignes_vente.prix_achat_unitaire`) − dépenses de la période.
 8. **Crédit** : interdit pour le « Client comptoir » ; refusé si le plafond de crédit du client est dépassé.
 9. **Remises** : seulement avec le droit `ventes.remise`, dans la limite du plafond paramétré.

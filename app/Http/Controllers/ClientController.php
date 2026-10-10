@@ -11,11 +11,10 @@ use App\Services\JournalService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Carbon;
 
 /**
- * Clients (droit clients.gerer) : liste, panneau de saisie, fiche avec créance et plafond, page Crédits.
+ * Clients (droit clients.gerer) : liste, panneau de saisie, fiche avec créance et plafond.
+ * Les débiteurs ont leur page « Créances » (CreanceController).
  * Le « Client comptoir » (ventes anonymes) ne peut être ni supprimé, ni désactivé, ni renommé,
  * et n'a jamais de crédit (CLAUDE.md §5.8).
  */
@@ -83,69 +82,6 @@ class ClientController extends Controller
                 ->limit(15)
                 ->get(),
         ]);
-    }
-
-    /** Clients ayant une créance, de la plus forte à la plus faible, avec l'ancienneté de la plus vieille dette. */
-    public function credits(Request $requete): View
-    {
-        $recherche = trim((string) $requete->query('recherche'));
-        $anciennete = in_array($requete->query('anciennete'), ['recente', 'moyenne', 'ancienne'], true) ? $requete->query('anciennete') : null;
-        $aujourdhui = today();
-
-        $impayees = fn ($q) => $q->where('statut', StatutVente::Validee)->where('reste_a_payer', '>', 0);
-
-        $requeteCredits = Client::query()
-            ->where('nom', '!=', Client::COMPTOIR)
-            ->whereHas('ventes', $impayees)
-            ->withSum(['ventes as creance' => $impayees], 'reste_a_payer')
-            ->withCount(['ventes as ventes_impayees' => $impayees])
-            ->addSelect(['plus_ancienne' => Vente::selectRaw('MIN(date_vente)')
-                ->whereColumn('client_id', 'clients.id')
-                ->where('statut', StatutVente::Validee)
-                ->where('reste_a_payer', '>', 0)])
-            ->when($recherche !== '', fn ($q) => $q->where(fn ($q) => $q
-                ->where('nom', 'like', "%{$recherche}%")
-                ->orWhere('telephone', 'like', "%{$recherche}%")));
-
-        // Liste complète des débiteurs (quelques centaines au plus) : l'ancienneté en jours
-        // et son filtre sont calculés ici, puis la liste triée est paginée
-        $clients = $requeteCredits->orderByDesc('creance')->orderBy('nom')->get()
-            ->each(function (Client $client) use ($aujourdhui) {
-                $client->jours = (int) Carbon::parse($client->plus_ancienne)->startOfDay()->diffInDays($aujourdhui);
-            })
-            ->when($anciennete, fn ($liste) => $liste->filter(fn (Client $client) => self::tranche($client->jours) === $anciennete))
-            ->values();
-
-        $synthese = [
-            'total' => (float) $clients->sum('creance'),
-            'debiteurs' => $clients->count(),
-            'plusDe60' => (float) $clients->filter(fn ($c) => $c->jours > 60)->sum('creance'),
-        ];
-
-        // Pagination manuelle : l'ancienneté est calculée sur la liste triée
-        $page = max(1, $requete->integer('page', 1));
-        $credits = new LengthAwarePaginator(
-            $clients->forPage($page, 15)->values(), $clients->count(), 15, $page,
-            ['path' => $requete->url(), 'query' => $requete->query()],
-        );
-
-        $donnees = compact('credits', 'recherche', 'anciennete');
-
-        if ($requete->header('X-Fragment') === 'liste') {
-            return view('clients._liste-credits', $donnees);
-        }
-
-        return view('clients.credits', [...$donnees, 'synthese' => $synthese]);
-    }
-
-    /** Tranche d'ancienneté : moins de 30 jours, 30 à 60 jours, plus de 60 jours. */
-    public static function tranche(int $jours): string
-    {
-        return match (true) {
-            $jours < 30 => 'recente',
-            $jours <= 60 => 'moyenne',
-            default => 'ancienne',
-        };
     }
 
     public function store(ClientRequest $requete): RedirectResponse

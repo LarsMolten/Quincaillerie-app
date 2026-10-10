@@ -4,9 +4,12 @@ use App\Http\Controllers\AchatController;
 use App\Http\Controllers\Auth\ConnexionController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CreanceController;
 use App\Http\Controllers\DesignSystemeController;
+use App\Http\Controllers\DetteController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\FournisseurController;
+use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\PreferenceThemeController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\UniteController;
@@ -54,8 +57,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/achats/nouveau', [AchatController::class, 'create'])->name('achats.create');
         Route::post('/achats', [AchatController::class, 'store'])->name('achats.store');
         Route::get('/achats-produits', [AchatController::class, 'produits'])->name('achats.produits');
-        Route::post('/achats/{achat}/paiements', [AchatController::class, 'paiement'])->whereNumber('achat')->name('achats.paiements.store');
     });
+    Route::post('/achats/{achat}/paiements', [AchatController::class, 'paiement'])
+        ->whereNumber('achat')->middleware(['droit:paiements.gerer', 'droit:achats.voir'])->name('achats.paiements.store');
     Route::middleware('droit:achats.voir')->group(function () {
         Route::get('/achats', [AchatController::class, 'index'])->name('achats.index');
         Route::get('/achats/{achat}', [AchatController::class, 'show'])->whereNumber('achat')->name('achats.show');
@@ -89,6 +93,23 @@ Route::middleware('auth')->group(function () {
         Route::post('/factures/{facture}/partage', [FactureController::class, 'partager'])->whereNumber('facture')->name('factures.partager');
     });
 
+    // Paiements, créances clients et reçus
+    Route::middleware('droit:paiements.gerer')->group(function () {
+        Route::get('/paiements', [PaiementController::class, 'index'])->name('paiements.index');
+        Route::get('/paiements/{paiement}/recu', [PaiementController::class, 'recu'])->whereNumber('paiement')->name('paiements.recu');
+        Route::post('/ventes/{vente}/paiements', [PaiementController::class, 'encaisser'])->whereNumber('vente')->name('paiements.ventes.store');
+        Route::get('/creances', [CreanceController::class, 'index'])->name('creances.index');
+        Route::get('/creances/{client}', [CreanceController::class, 'show'])->whereNumber('client')->name('creances.show');
+    });
+    // Ancienne page « Crédits » des clients, fusionnée dans « Créances »
+    Route::permanentRedirect('/clients/credits', '/creances');
+
+    // Dettes fournisseurs : paiements.gerer ET achats.voir
+    Route::middleware(['droit:paiements.gerer', 'droit:achats.voir'])->group(function () {
+        Route::get('/dettes', [DetteController::class, 'index'])->name('dettes.index');
+        Route::get('/dettes/{fournisseur}', [DetteController::class, 'show'])->whereNumber('fournisseur')->name('dettes.show');
+    });
+
     // Fournisseurs
     Route::middleware('droit:fournisseurs.gerer')->group(function () {
         Route::resource('fournisseurs', FournisseurController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
@@ -96,9 +117,8 @@ Route::middleware('auth')->group(function () {
         Route::patch('/fournisseurs/{fournisseur}/statut', [FournisseurController::class, 'statut'])->name('fournisseurs.statut');
     });
 
-    // Clients (« Crédits » déclaré avant /clients/{client})
+    // Clients
     Route::middleware('droit:clients.gerer')->group(function () {
-        Route::get('/clients/credits', [ClientController::class, 'credits'])->name('clients.credits');
         // Identifiant numérique : /clients/historique (à venir) n'est pas pris pour une fiche
         Route::resource('clients', ClientController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
             ->where(['client' => '[0-9]+']);
@@ -117,7 +137,7 @@ Route::middleware('auth')->group(function () {
     // Modules pas encore implémentés : page « Bientôt disponible », protégée par le droit du module
     foreach (Navigation::aVenir() as $entree) {
         Route::view($entree['url'], 'bientot-disponible')
-            ->middleware('droit:'.$entree['droit'])
+            ->middleware(array_map(fn (string $code) => 'droit:'.$code, (array) $entree['droit']))
             ->name($entree['route']);
     }
 });

@@ -9,6 +9,7 @@ import menu from './composants/menu';
 import modal from './composants/modal';
 import ouvrirPdf from './composants/ouvrir-pdf';
 import recherche from './composants/recherche';
+import reglements from './composants/reglements';
 import saisieAchat from './composants/saisie-achat';
 import theme from './composants/theme';
 import toasts from './composants/toasts';
@@ -28,6 +29,7 @@ document.addEventListener('alpine:init', () => {
     saisieAchat(Alpine);
     caisse(Alpine);
     factures(Alpine);
+    reglements(Alpine);
 });
 
 window.Alpine = Alpine;

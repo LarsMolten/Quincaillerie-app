@@ -17,6 +17,7 @@ class PaiementFactory extends Factory
     public function definition(): array
     {
         return [
+            'numero' => fake()->unique()->numerify('REC-'.now()->year.'-#####'),
             'payable_type' => 'vente',
             'payable_id' => Vente::factory(),
             'montant' => fake()->numberBetween(1, 500) * 1000,

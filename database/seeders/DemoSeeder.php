@@ -344,6 +344,7 @@ class DemoSeeder extends Seeder
             }
 
             $achat->paiements()->create([
+                'numero' => $this->numero('REC', $date),
                 'montant' => $montantPaye,
                 'mode' => ModePaiement::from($this->choisir([
                     ModePaiement::Virement->value => 2,
@@ -440,6 +441,7 @@ class DemoSeeder extends Seeder
 
             if ($montantPaye > 0) {
                 $vente->paiements()->create([
+                    'numero' => $this->numero('REC', $date),
                     'montant' => $montantPaye,
                     // L'acompte d'une vente à crédit est versé en espèces
                     'mode' => $aCredit ? ModePaiement::Especes : $mode,

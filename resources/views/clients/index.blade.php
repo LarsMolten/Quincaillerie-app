@@ -7,7 +7,9 @@
     <x-entete-page titre="Clients" description="Votre clientèle, ses achats et ses crédits."
                    :fil="['Tableau de bord' => route('accueil'), 'Clients' => null]">
         <x-slot:actions>
-            <x-bouton :href="route('clients.credits')" variante="secondaire" icone="hand-coins">Crédits</x-bouton>
+            @droit('paiements.gerer')
+                <x-bouton :href="route('creances.index')" variante="secondaire" icone="hand-coins">Créances</x-bouton>
+            @enddroit
             <x-bouton type="button" icone="plus" x-data x-on:click="$dispatch('nouveau-client')">Nouveau client</x-bouton>
         </x-slot:actions>
     </x-entete-page>

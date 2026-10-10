@@ -158,11 +158,9 @@ class ClientTest extends TestCase
     {
         // Le vendeur gère les clients (droit clients.gerer) ; le magasinier non
         $this->get(route('clients.index'))->assertOk();
-        $this->get(route('clients.credits'))->assertOk();
 
         $this->actingAs($this->avecRole(RoleSeeder::MAGASINIER));
         $this->get(route('clients.index'))->assertForbidden();
-        $this->get(route('clients.credits'))->assertForbidden();
         $this->get(route('clients.show', $this->comptoir))->assertForbidden();
         $this->post(route('clients.store'), ['nom' => 'x'])->assertForbidden();
     }

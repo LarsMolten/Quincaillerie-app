@@ -127,6 +127,7 @@ class MigrationsTransactionsTest extends TestCase
 
         foreach (ModePaiement::encaissements() as $mode) {
             DB::table('paiements')->insert([
+                'numero' => 'REC-2026-'.$mode->value,
                 'payable_type' => 'vente',
                 'payable_id' => $venteId,
                 'montant' => 1000,
@@ -203,6 +204,7 @@ class MigrationsTransactionsTest extends TestCase
     {
         $this->expectException(QueryException::class);
         DB::table('paiements')->insert([
+            'numero' => 'REC-2026-00001',
             'payable_type' => 'vente',
             'payable_id' => $this->creerVente('VTE-2026-00001'),
             'montant' => 1000,

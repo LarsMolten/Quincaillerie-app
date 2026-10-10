@@ -61,6 +61,7 @@ class DocumentsTest extends TestCase
     {
         $vente = Vente::factory()->create();
         $paiement = $vente->paiements()->create([
+            'numero' => 'REC-2026-00001',
             'montant' => 10000,
             'mode' => ModePaiement::Especes,
             'date_paiement' => now(),

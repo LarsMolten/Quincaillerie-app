@@ -6,6 +6,7 @@ use App\Enums\ModePaiement;
 use App\Enums\StatutAchat;
 use App\Exceptions\OperationRefuseeException;
 use App\Exceptions\StockInsuffisantException;
+use App\Http\Controllers\Concerns\EnregistrePaiement;
 use App\Http\Requests\AchatRequest;
 use App\Http\Requests\AnnulationRequest;
 use App\Http\Requests\PaiementRequest;
@@ -31,6 +32,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AchatController extends Controller
 {
+    use EnregistrePaiement;
+
     public const PERIODES = ['aujourdhui' => 'Aujourd\'hui', '7j' => '7 jours', '30j' => '30 jours', 'mois' => 'Ce mois', '' => 'Tout'];
 
     public function __construct(
@@ -177,25 +180,10 @@ class AchatController extends Controller
         return response()->json($produits->map(fn (Produit $p) => $this->pourSaisie($p)));
     }
 
-    public function paiement(PaiementRequest $requete, Achat $achat): RedirectResponse
+    /** Paiement ultérieur d'un achat (fiche achat, page Dettes fournisseurs). */
+    public function paiement(PaiementRequest $requete, Achat $achat): JsonResponse|RedirectResponse
     {
-        try {
-            $this->paiements->enregistrer(
-                $achat,
-                (float) $requete->validated('montant'),
-                ModePaiement::from($requete->validated('mode')),
-                $requete->validated('reference'),
-                Carbon::parse($requete->validated('date_paiement'))->setTimeFrom(now()),
-            );
-        } catch (OperationRefuseeException $erreur) {
-            return back()->withInput()->with('erreur', $erreur->getMessage());
-        }
-
-        $achat->refresh();
-
-        return back()->with('succes', $achat->reste_a_payer <= 0
-            ? "Paiement enregistré : l'achat {$achat->numero} est soldé."
-            : 'Paiement enregistré. Reste à payer : '.format_ar($achat->reste_a_payer).'.');
+        return $this->enregistrerPaiement($requete, $achat);
     }
 
     public function annuler(AnnulationRequest $requete, Achat $achat): RedirectResponse
