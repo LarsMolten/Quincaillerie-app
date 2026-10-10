@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ConnexionController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CreanceController;
+use App\Http\Controllers\DepenseController;
 use App\Http\Controllers\DesignSystemeController;
 use App\Http\Controllers\DetteController;
 use App\Http\Controllers\FactureController;
@@ -132,6 +133,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/retours/{retour}/bon', [RetourController::class, 'bon'])->whereNumber('retour')->name('retours.bon');
         Route::post('/retours/{retour}/annulation', [RetourController::class, 'annuler'])->whereNumber('retour')->name('retours.annuler');
     });
+
+    // Dépenses (suppression douce réservée à l'Administrateur : contrôlée par DepenseService)
+    Route::resource('depenses', DepenseController::class)->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['depenses' => 'depense'])->whereNumber('depense')->middleware('droit:depenses.gerer');
 
     // Paiements, créances clients et reçus
     Route::middleware('droit:paiements.gerer')->group(function () {

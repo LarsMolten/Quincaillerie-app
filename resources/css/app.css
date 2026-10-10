@@ -173,6 +173,14 @@
     --color-neutre: var(--neutre);
     --color-neutre-doux: var(--neutre-doux);
     --color-neutre-texte: var(--neutre-texte);
+    --color-graphique-1: var(--graphique-1);
+    --color-graphique-2: var(--graphique-2);
+    --color-graphique-3: var(--graphique-3);
+    --color-graphique-4: var(--graphique-4);
+    --color-graphique-5: var(--graphique-5);
+    --color-graphique-6: var(--graphique-6);
+    --color-graphique-7: var(--graphique-7);
+    --color-graphique-8: var(--graphique-8);
 }
 
 @layer base {
@@ -212,6 +220,16 @@
         --neutre: oklch(0.6 0.02 257);
         --neutre-doux: oklch(0.95 0.006 257);
         --neutre-texte: oklch(0.42 0.025 257);
+
+        /* Séries des graphiques : teintes espacées, luminosité proche, accent orange en premier */
+        --graphique-1: oklch(0.7 0.18 50);
+        --graphique-2: oklch(0.6 0.14 245);
+        --graphique-3: oklch(0.62 0.14 155);
+        --graphique-4: oklch(0.58 0.16 300);
+        --graphique-5: oklch(0.76 0.15 85);
+        --graphique-6: oklch(0.58 0.18 25);
+        --graphique-7: oklch(0.66 0.11 200);
+        --graphique-8: oklch(0.62 0.02 257);
     }
 
     /* Mode sombre : fond quasi noir bleuté, surfaces plus claires, accent plus lumineux */
@@ -252,6 +270,15 @@
         --neutre: oklch(0.7 0.02 260);
         --neutre-doux: oklch(0.3 0.012 260);
         --neutre-texte: oklch(0.86 0.015 260);
+
+        --graphique-1: oklch(0.76 0.16 55);
+        --graphique-2: oklch(0.7 0.12 245);
+        --graphique-3: oklch(0.72 0.13 155);
+        --graphique-4: oklch(0.7 0.14 300);
+        --graphique-5: oklch(0.82 0.14 85);
+        --graphique-6: oklch(0.7 0.16 25);
+        --graphique-7: oklch(0.76 0.1 200);
+        --graphique-8: oklch(0.7 0.02 260);
     }
 
     html {

@@ -5,8 +5,10 @@ import bouton from './composants/bouton';
 import caisse from './composants/caisse';
 import comptageInventaire from './composants/comptage-inventaire';
 import coquille from './composants/coquille';
+import depenses from './composants/depenses';
 import factures from './composants/factures';
 import formulaireProduit from './composants/formulaire-produit';
+import graphiqueAnneau from './composants/graphique-anneau';
 import listeDynamique from './composants/liste-dynamique';
 import menu from './composants/menu';
 import modal from './composants/modal';
@@ -36,6 +38,8 @@ document.addEventListener('alpine:init', () => {
     assistantRetour(Alpine);
     ajustementStock(Alpine);
     comptageInventaire(Alpine);
+    depenses(Alpine);
+    graphiqueAnneau(Alpine);
 });
 
 window.Alpine = Alpine;

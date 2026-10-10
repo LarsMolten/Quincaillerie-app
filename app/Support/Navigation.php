@@ -55,7 +55,7 @@ class Navigation
                 $e('Paiements', 'credit-card', 'paiements.index', '/paiements', 'paiements.gerer', false),
                 $e('Créances', 'hand-coins', 'creances.index', '/creances', 'paiements.gerer', false),
                 $e('Dettes fournisseurs', 'banknote', 'dettes.index', '/dettes', ['paiements.gerer', 'achats.voir'], false),
-                $e('Dépenses', 'wallet', 'depenses.index', '/depenses', 'depenses.gerer'),
+                $e('Dépenses', 'wallet', 'depenses.index', '/depenses', 'depenses.gerer', false),
                 $e('Résultats', 'chart-line', 'resultats.index', '/resultats', 'finances.voir'),
             ]],
             ['titre' => 'Rapports', 'entrees' => [

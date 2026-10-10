@@ -31,6 +31,8 @@ const ICONES = [
     'send', 'share-2', 'message-circle',
     // Retours (assistant)
     'arrow-left', 'arrow-right',
+    // Dépenses (catégories)
+    'zap', 'droplet', 'building-2',
 ];
 
 const ATTRIBUTS = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '

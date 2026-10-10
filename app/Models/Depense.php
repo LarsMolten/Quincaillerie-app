@@ -7,10 +7,15 @@ use App\Enums\ModePaiement;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Dépense de fonctionnement (salaires, loyer, électricité…), déduite du bénéfice (CLAUDE.md §5.7).
+ * Suppression douce, réservée à l'Administrateur et journalisée (DepenseService).
+ */
 class Depense extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'depenses';
 
