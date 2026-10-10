@@ -20,6 +20,9 @@
                 @enddroit
             @endif
             @if (! $annule)
+                @droit('retours.gerer')
+                    <x-bouton :href="route('retours.create', ['achat' => $achat->id])" variante="secondaire" icone="undo-2">Retour</x-bouton>
+                @enddroit
                 @droit('achats.annuler')
                     <x-bouton type="button" variante="danger" icone="ban" x-data x-on:click="$dispatch('ouvrir-modal', 'modale-annulation')">Annuler l'achat</x-bouton>
                 @enddroit
@@ -119,6 +122,8 @@
                 @endforeach
             </ul>
         </x-carte>
+
+        @include('retours._carte-document', ['retours' => $achat->retours])
     </div>
 
     {{-- Paiement ultérieur --}}

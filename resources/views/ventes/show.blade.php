@@ -19,6 +19,9 @@
                 <x-bouton type="button" icone="hand-coins" x-data x-on:click="$dispatch('ouvrir-modal', 'modale-paiement')">Encaisser</x-bouton>
             @endif
             @if (! $annulee)
+                @droit('retours.gerer')
+                    <x-bouton :href="route('retours.create', ['vente' => $vente->id])" variante="secondaire" icone="undo-2">Retour</x-bouton>
+                @enddroit
                 @droit('ventes.annuler')
                     <x-bouton type="button" variante="danger" icone="ban" x-data x-on:click="$dispatch('ouvrir-modal', 'modale-annulation')">Annuler la vente</x-bouton>
                 @enddroit
@@ -146,6 +149,8 @@
                 @endforeach
             </ul>
         </x-carte>
+
+        @include('retours._carte-document', ['retours' => $vente->retours])
     </div>
 
     {{-- Encaissement ultérieur (vente à crédit ou partielle) --}}

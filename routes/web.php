@@ -12,6 +12,7 @@ use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\PreferenceThemeController;
 use App\Http\Controllers\ProduitController;
+use App\Http\Controllers\RetourController;
 use App\Http\Controllers\UniteController;
 use App\Http\Controllers\VenteController;
 use App\Support\Navigation;
@@ -91,6 +92,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/factures/{facture}/envoi', [FactureController::class, 'envoyer'])
             ->whereNumber('facture')->middleware('throttle:10,1')->name('factures.envoyer');
         Route::post('/factures/{facture}/partage', [FactureController::class, 'partager'])->whereNumber('facture')->name('factures.partager');
+    });
+
+    // Retours clients et fournisseurs (« nouveau » et « documents » déclarés avant /retours/{retour})
+    Route::middleware('droit:retours.gerer')->group(function () {
+        Route::get('/retours/clients', [RetourController::class, 'clients'])->name('retours.clients');
+        Route::get('/retours/fournisseurs', [RetourController::class, 'fournisseurs'])->name('retours.fournisseurs');
+        Route::get('/retours/nouveau', [RetourController::class, 'create'])->name('retours.create');
+        Route::get('/retours/documents', [RetourController::class, 'documents'])->name('retours.documents');
+        Route::post('/retours', [RetourController::class, 'store'])->name('retours.store');
+        Route::get('/retours/{retour}', [RetourController::class, 'show'])->whereNumber('retour')->name('retours.show');
+        Route::get('/retours/{retour}/bon', [RetourController::class, 'bon'])->whereNumber('retour')->name('retours.bon');
+        Route::post('/retours/{retour}/annulation', [RetourController::class, 'annuler'])->whereNumber('retour')->name('retours.annuler');
     });
 
     // Paiements, créances clients et reçus

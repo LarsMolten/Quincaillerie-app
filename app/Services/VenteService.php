@@ -148,6 +148,11 @@ class VenteService
                 throw new OperationRefuseeException("La vente {$verrouillee->numero} est déjà annulée.");
             }
 
+            // Les quantités déjà retournées seraient remises deux fois en stock
+            if ($retour = $verrouillee->retours()->valides()->first()) {
+                throw new OperationRefuseeException("La vente {$verrouillee->numero} a un retour validé : annulez d'abord le retour {$retour->numero}.");
+            }
+
             $quantites = $verrouillee->lignes()->get()
                 ->groupBy('produit_id')
                 ->map(fn ($lignes) => round($lignes->sum(fn ($l) => (float) $l->quantite), 3));

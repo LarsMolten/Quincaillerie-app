@@ -136,6 +136,11 @@ class AchatService
                 throw new OperationRefuseeException("L'achat {$verrouille->numero} est déjà annulé.");
             }
 
+            // Les quantités déjà rendues au fournisseur seraient retirées deux fois du stock
+            if ($retour = $verrouille->retours()->valides()->first()) {
+                throw new OperationRefuseeException("L'achat {$verrouille->numero} a un retour validé : annulez d'abord le retour {$retour->numero}.");
+            }
+
             $quantites = $verrouille->lignes()->get()
                 ->groupBy('produit_id')
                 ->map(fn ($lignes) => round($lignes->sum(fn ($l) => (float) $l->quantite), 3));

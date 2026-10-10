@@ -2,16 +2,19 @@
 
 namespace Tests\Feature\Services;
 
+use App\Enums\ModePaiement;
 use App\Enums\TypeMouvementStock;
 use App\Models\Achat;
 use App\Models\Client;
 use App\Models\Facture;
 use App\Models\Fournisseur;
+use App\Models\LigneRetour;
 use App\Models\Paiement;
 use App\Models\Produit;
 use App\Models\Utilisateur;
 use App\Models\Vente;
 use App\Services\MouvementStockService;
+use App\Services\VenteService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Group;
@@ -90,6 +93,25 @@ class ConcurrenceNumerotationTest extends TestCase
         $this->assertEquals(0, $vente->fresh()->reste_a_payer, 'Le reste n\'est jamais dépassé.');
         $this->assertEquals($reste * 1000, $vente->fresh()->montant_paye);
         $this->assertEquals($reste * 1000, Paiement::sum('montant'));
+    }
+
+    public function test_retours_simultanes_sur_une_meme_vente_sans_depassement_ni_doublon(): void
+    {
+        $utilisateur = Utilisateur::factory()->create();
+        $this->actingAs($utilisateur);
+        $client = Client::factory()->create(['nom' => Client::COMPTOIR, 'plafond_credit' => null]);
+        $produit = Produit::factory()->create(['stock_actuel' => 0, 'prix_vente' => 1000]);
+        app(MouvementStockService::class)->enregistrer($produit, TypeMouvementStock::Achat, 100);
+        $vendus = 15;
+        $vente = app(VenteService::class)->creer($client, [['produit_id' => $produit->id, 'quantite' => $vendus]], 0, ModePaiement::Especes, 15000);
+
+        // 2 × 10 tentatives d'une unité pour 15 unités vendues : 15 acceptées, 5 refusées
+        $bilans = $this->lancer('retours.php', [$vente->id, $produit->id, $utilisateur->id]);
+
+        $this->assertSame($this->attendus('RET', $vendus), $this->numeros($bilans, 'numeros'), 'Numéros de retour uniques et sans trou.');
+        $this->assertCount(2 * self::DOCUMENTS_PAR_PROCESSUS - $vendus, array_merge(...array_column($bilans, 'refus')), 'Les retours en trop sont refusés.');
+        $this->assertEquals($vendus, LigneRetour::sum('quantite'), 'Jamais plus que la quantité vendue.');
+        $this->assertEquals(100, $produit->fresh()->stock_actuel, 'Tout le vendu est revenu en stock, une seule fois.');
     }
 
     /**

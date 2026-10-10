@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import assistantRetour from './composants/assistant-retour';
 import bouton from './composants/bouton';
 import caisse from './composants/caisse';
 import coquille from './composants/coquille';
@@ -30,6 +31,7 @@ document.addEventListener('alpine:init', () => {
     caisse(Alpine);
     factures(Alpine);
     reglements(Alpine);
+    assistantRetour(Alpine);
 });
 
 window.Alpine = Alpine;
