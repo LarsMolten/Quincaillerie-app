@@ -72,8 +72,13 @@ function telecharger(blob, reponse) {
 /** Remplace les zones, le titre et le jeton CSRF par ceux de la page reçue, puis affiche ses toasts flash. */
 function appliquer(page) {
     for (const zone of zones(document)) {
-        const nouvelle = page.querySelector(`[data-zone="${zone.dataset.zone}"]`);
-        zone.replaceWith(document.adoptNode(nouvelle));
+        const nouvelle = document.adoptNode(page.querySelector(`[data-zone="${zone.dataset.zone}"]`));
+        const defilement = zone.scrollTop;
+        zone.replaceWith(nouvelle);
+        // Les menus gardent leur position de défilement (le contenu, lui, repart du haut)
+        if (zone.dataset.zone !== 'contenu') {
+            nouvelle.scrollTop = defilement;
+        }
     }
     document.title = page.title;
     const jeton = page.querySelector('meta[name="csrf-token"]')?.content;

@@ -85,6 +85,7 @@ describe('Navigation partielle', () => {
     it('remplace le contenu et le menu actif sans recharger la page', async () => {
         const nav = document.querySelector('[data-zone="menu-lateral"]');
         nav.parentElement.dataset.temoin = 'conserve';
+        nav.scrollTop = 120;
         reponses.push(() => html(page({
             titre: 'Clients',
             actif: 'clients',
@@ -104,6 +105,7 @@ describe('Navigation partielle', () => {
         assert.equal(document.querySelector('meta[name="csrf-token"]').content, 'jeton-Clients');
         assert.equal(fenetre.location.pathname, '/clients');
         assert.equal(document.body.dataset.temoin, 'conserve', 'Le reste de la page est conservé.');
+        assert.equal(document.querySelector('[data-zone="menu-lateral"]').scrollTop, 120, 'Le menu garde sa position de défilement.');
         assert.equal(document.body.dataset.inits, '1', 'Les composants Alpine du nouveau contenu sont initialisés.');
         assert.deepEqual(toasts, ['succes:Client enregistré.']);
         assert.equal(document.activeElement, document.getElementById('contenu'));
