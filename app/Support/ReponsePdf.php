@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Réponse d'un document PDF (ticket, bon d'achat, étiquettes).
  *
- * - Navigation classique : le PDF, affiché dans le navigateur (inline).
+ * - Navigation classique : le PDF, affiché dans le navigateur (inline), ou téléchargé avec ?telecharger=1.
  * - Demande JSON (directive x-ouvrir-pdf) : le PDF encodé en base64. Les gestionnaires de téléchargement
  *   intégrés au navigateur (Internet Download Manager…) interceptent toute réponse application/pdf,
  *   y compris un fetch(), et la remplacent par un « 204 No Content » : le ticket ne s'affichait jamais.
@@ -27,6 +27,6 @@ class ReponsePdf
             ]);
         }
 
-        return $pdf->stream($nomFichier);
+        return $requete->boolean('telecharger') ? $pdf->download($nomFichier) : $pdf->stream($nomFichier);
     }
 }

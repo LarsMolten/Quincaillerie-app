@@ -81,7 +81,11 @@
             @if ($vente->facture)
                 <div class="flex items-center justify-between gap-3 border-b border-bordure px-carte py-3 text-sm">
                     <div>
-                        <p class="font-medium">Facture {{ $vente->facture->numero }}</p>
+                        @droit('factures.voir')
+                            <a href="{{ route('factures.index', ['apercu' => $vente->facture->id]) }}" class="font-medium hover:underline">Facture {{ $vente->facture->numero }}</a>
+                        @else
+                            <p class="font-medium">Facture {{ $vente->facture->numero }}</p>
+                        @enddroit
                         <p class="text-xs text-texte-doux">Émise le {{ $vente->facture->date_emission->translatedFormat('j M Y, H:i') }}</p>
                     </div>
                     <x-badge :statut="$vente->facture->statut" />

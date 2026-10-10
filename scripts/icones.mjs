@@ -27,6 +27,8 @@ const ICONES = [
     'hammer', 'wrench',
     // Caisse
     'shopping-basket', 'minus', 'keyboard', 'wifi-off', 'landmark', 'circle-check-big', 'user-round-search',
+    // Factures
+    'send', 'share-2', 'message-circle',
 ];
 
 const ATTRIBUTS = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '

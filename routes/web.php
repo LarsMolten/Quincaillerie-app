@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ConnexionController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DesignSystemeController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\PreferenceThemeController;
 use App\Http\Controllers\ProduitController;
@@ -78,6 +79,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/ventes/{vente}/annulation', [VenteController::class, 'annuler'])
         ->whereNumber('vente')->middleware('droit:ventes.annuler')->name('ventes.annuler');
 
+    // Factures (jamais modifiables : aucune route d'édition ni de suppression)
+    Route::middleware('droit:factures.voir')->group(function () {
+        Route::get('/factures', [FactureController::class, 'index'])->name('factures.index');
+        Route::get('/factures/{facture}', [FactureController::class, 'show'])->whereNumber('facture')->name('factures.show');
+        Route::get('/factures/{facture}/pdf', [FactureController::class, 'pdf'])->whereNumber('facture')->name('factures.pdf');
+        Route::post('/factures/{facture}/envoi', [FactureController::class, 'envoyer'])
+            ->whereNumber('facture')->middleware('throttle:10,1')->name('factures.envoyer');
+        Route::post('/factures/{facture}/partage', [FactureController::class, 'partager'])->whereNumber('facture')->name('factures.partager');
+    });
+
     // Fournisseurs
     Route::middleware('droit:fournisseurs.gerer')->group(function () {
         Route::resource('fournisseurs', FournisseurController::class)->only(['index', 'show', 'store', 'update', 'destroy'])
@@ -110,6 +121,11 @@ Route::middleware('auth')->group(function () {
             ->name($entree['route']);
     }
 });
+
+// Facture partagée (WhatsApp) : seule route publique de l'application, décision validée (exception à CLAUDE.md §6).
+// Lien signé et expirant (FactureController::JOURS_PARTAGE jours), généré et journalisé par factures.partager.
+Route::get('/f/{facture}', [FactureController::class, 'publique'])
+    ->whereNumber('facture')->middleware(['signed', 'throttle:30,1'])->name('factures.publique');
 
 // Vitrine des composants : environnement local uniquement (404 ailleurs)
 Route::get('/design-systeme', DesignSystemeController::class)->name('design-systeme');

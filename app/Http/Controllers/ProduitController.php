@@ -11,6 +11,7 @@ use App\Models\Produit;
 use App\Models\Unite;
 use App\Services\PhotoProduitService;
 use App\Services\ProduitService;
+use App\Support\CodeBarres;
 use App\Support\Ean13;
 use App\Support\ReponsePdf;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -21,8 +22,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Picqer\Barcode\BarcodeGeneratorPNG;
-use Picqer\Barcode\BarcodeGeneratorSVG;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -140,7 +139,7 @@ class ProduitController extends Controller
             'derniersAchats' => $produit->lignesAchat()->with('achat.fournisseur')
                 ->whereHas('achat', fn ($q) => $q->where('statut', StatutAchat::Valide))
                 ->latest('id')->limit(5)->get(),
-            'codeBarresSvg' => $produit->code_barres ? $this->dessinerCodeBarres($produit->code_barres, 'svg') : null,
+            'codeBarresSvg' => $produit->code_barres ? CodeBarres::svg($produit->code_barres) : null,
             ...$this->donneesFormulaire(),
         ]);
     }
@@ -187,7 +186,7 @@ class ProduitController extends Controller
         $etiquettes = Produit::with('unite')->whereIn('id', $valide['produits'])->orderBy('nom')->get()
             ->flatMap(fn (Produit $produit) => array_fill(0, $quantite, [
                 'produit' => $produit,
-                'code' => $produit->code_barres ? $this->dessinerCodeBarres($produit->code_barres, 'png') : null,
+                'code' => $produit->code_barres ? CodeBarres::pngBase64($produit->code_barres) : null,
             ]));
 
         $pdf = Pdf::loadView('produits.etiquettes', [
@@ -218,18 +217,5 @@ class ProduitController extends Controller
         }
 
         return $redirection;
-    }
-
-    /** Code-barres en SVG (écran) ou en PNG base64 (PDF), EAN-13 si possible, sinon Code 128. */
-    private function dessinerCodeBarres(string $code, string $format): string
-    {
-        $type = Ean13::estValide($code) ? 'EAN13' : 'C128';
-
-        if ($format === 'svg') {
-            // Couleur du texte courant : le code-barres suit le thème clair ou sombre
-            return str_replace('fill="black"', 'fill="currentColor"', (new BarcodeGeneratorSVG)->getBarcode($code, $type, 2, 56, 'black'));
-        }
-
-        return base64_encode((new BarcodeGeneratorPNG)->getBarcode($code, $type, 2, 50));
     }
 }

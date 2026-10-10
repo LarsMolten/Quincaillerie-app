@@ -15,9 +15,9 @@ use App\Models\Parametre;
 use App\Models\Produit;
 use App\Models\Utilisateur;
 use App\Models\Vente;
+use App\Services\FactureService;
 use App\Services\VenteService;
 use App\Support\ReponsePdf;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -35,10 +35,10 @@ class VenteController extends Controller
 
     public const STATUTS = ['validees' => 'Validées', 'credit' => 'Avec reste à payer', 'annulees' => 'Annulées'];
 
-    /** Conversion pour le format du papier DomPDF (1 mm = 72 / 25,4 points). */
-    private const POINTS_PAR_MM = 72 / 25.4;
-
-    public function __construct(private readonly VenteService $ventes) {}
+    public function __construct(
+        private readonly VenteService $ventes,
+        private readonly FactureService $factures,
+    ) {}
 
     public function index(Request $requete): View
     {
@@ -143,26 +143,16 @@ class VenteController extends Controller
         ]);
     }
 
-    /** Ticket de caisse 80 mm en PDF (DomPDF : tables et couleurs hexadécimales). */
+    /** Ticket de caisse 80 mm : la facture de la vente au format ticket (gabarit unique factures/ticket). */
     public function ticket(Request $requete, Vente $vente): Response
     {
-        $vente->load(['client', 'utilisateur', 'lignes.produit.unite', 'facture']);
+        $facture = $vente->facture ?? abort(404, 'Cette vente n\'a pas de facture.');
 
-        // Rouleau de 80 mm de large ; hauteur (en mm) adaptée au nombre de lignes
-        $hauteurMm = 85 + 11 * $vente->lignes->count() + ($vente->remise > 0 ? 6 : 0) + ($vente->reste_a_payer > 0 ? 6 : 0);
-
-        $pdf = Pdf::loadView('ventes.ticket', [
-            'vente' => $vente,
-            'entreprise' => [
-                'nom' => Parametre::valeur('nom_entreprise', config('app.name')),
-                'adresse' => Parametre::valeur('adresse'),
-                'telephone' => Parametre::valeur('telephone'),
-                'nif_stat' => Parametre::valeur('nif_stat'),
-                'pied' => Parametre::valeur('pied_de_facture'),
-            ],
-        ])->setPaper([0, 0, 80 * self::POINTS_PAR_MM, $hauteurMm * self::POINTS_PAR_MM]);
-
-        return ReponsePdf::depuis($requete, $pdf, "ticket-{$vente->numero}.pdf");
+        return ReponsePdf::depuis(
+            $requete,
+            $this->factures->pdf($facture, FactureService::FORMAT_TICKET),
+            "ticket-{$vente->numero}.pdf",
+        );
     }
 
     /** Catalogue de la caisse : produits actifs filtrés (recherche, catégorie), code-barres exact en premier. */

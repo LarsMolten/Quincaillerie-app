@@ -2,6 +2,7 @@ import Alpine from 'alpinejs';
 import bouton from './composants/bouton';
 import caisse from './composants/caisse';
 import coquille from './composants/coquille';
+import factures from './composants/factures';
 import formulaireProduit from './composants/formulaire-produit';
 import listeDynamique from './composants/liste-dynamique';
 import menu from './composants/menu';
@@ -26,6 +27,7 @@ document.addEventListener('alpine:init', () => {
     formulaireProduit(Alpine);
     saisieAchat(Alpine);
     caisse(Alpine);
+    factures(Alpine);
 });
 
 window.Alpine = Alpine;

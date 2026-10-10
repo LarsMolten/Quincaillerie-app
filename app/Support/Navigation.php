@@ -37,7 +37,7 @@ class Navigation
             ['titre' => 'Ventes', 'entrees' => [
                 $e('Nouvelle vente', 'shopping-cart', 'ventes.create', '/ventes/nouvelle', 'ventes.creer', false),
                 $e('Liste des ventes', 'receipt', 'ventes.index', '/ventes', 'ventes.voir', false),
-                $e('Factures', 'file-text', 'factures.index', '/factures', 'factures.voir'),
+                $e('Factures', 'file-text', 'factures.index', '/factures', 'factures.voir', false),
                 $e('Retours clients', 'undo-2', 'retours.clients', '/retours/clients', 'retours.gerer'),
             ]],
             ['titre' => 'Achats', 'entrees' => [

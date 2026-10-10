@@ -16,7 +16,7 @@
 const DUREE_URL_BLOB = 5 * 60 * 1000; // l'onglet peut recharger le PDF pendant 5 minutes
 
 /** Décode le PDF reçu en base64. */
-function versBlobPdf(base64) {
+export function versBlobPdf(base64) {
     const binaire = atob(base64);
     const octets = new Uint8Array(binaire.length);
     for (let i = 0; i < binaire.length; i++) {
