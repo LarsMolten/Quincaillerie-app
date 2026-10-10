@@ -33,6 +33,7 @@ php artisan serve                      # serveur local
 npm run dev                            # front en développement
 npm run build                          # build de production
 php artisan test                       # tests
+npm run test:js                        # tests des composants JS (happy-dom)
 php artisan stock:verifier             # contrôle de cohérence du stock
 ```
 

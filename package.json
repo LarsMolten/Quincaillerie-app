@@ -5,11 +5,13 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "icones": "node scripts/icones.mjs"
+        "icones": "node scripts/icones.mjs",
+        "test:js": "node --test \"tests/js/*.test.mjs\""
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
         "concurrently": "^10.0.3",
+        "happy-dom": "^20.14.6",
         "laravel-vite-plugin": "^3.1",
         "tailwindcss": "^4.0.0",
         "vite": "^8.0.0"
