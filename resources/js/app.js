@@ -10,6 +10,7 @@ import depenses from './composants/depenses';
 import factures from './composants/factures';
 import formulaireProduit from './composants/formulaire-produit';
 import graphiqueAnneau from './composants/graphique-anneau';
+import graphiqueRapport from './composants/graphique-rapport';
 import graphiqueVentes from './composants/graphique-ventes';
 import listeDynamique from './composants/liste-dynamique';
 import menu from './composants/menu';
@@ -43,6 +44,7 @@ document.addEventListener('alpine:init', () => {
     depenses(Alpine);
     graphiqueAnneau(Alpine);
     graphiqueVentes(Alpine);
+    graphiqueRapport(Alpine);
     carteDifferee(Alpine);
 });
 

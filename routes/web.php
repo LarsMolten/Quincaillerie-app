@@ -15,6 +15,7 @@ use App\Http\Controllers\MouvementController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\PreferenceThemeController;
 use App\Http\Controllers\ProduitController;
+use App\Http\Controllers\RapportController;
 use App\Http\Controllers\RetourController;
 use App\Http\Controllers\TableauDeBordController;
 use App\Http\Controllers\UniteController;
@@ -140,6 +141,16 @@ Route::middleware('auth')->group(function () {
     // Dépenses (suppression douce réservée à l'Administrateur : contrôlée par DepenseService)
     Route::resource('depenses', DepenseController::class)->only(['index', 'store', 'update', 'destroy'])
         ->parameters(['depenses' => 'depense'])->whereNumber('depense')->middleware('droit:depenses.gerer');
+
+    // Rapports (Ventes, Achats, Stock : rapports.voir ; Finances : finances.voir), exports PDF et Excel
+    foreach (RapportController::RAPPORTS as $rapport => $definition) {
+        Route::get("/rapports/{$rapport}", [RapportController::class, 'afficher'])
+            ->defaults('rapport', $rapport)->middleware('droit:'.$definition['droit'])->name("rapports.{$rapport}");
+    }
+    Route::get('/rapports/{rapport}/{format}', [RapportController::class, 'export'])
+        ->whereIn('rapport', array_keys(RapportController::RAPPORTS))->whereIn('format', ['pdf', 'excel'])->name('rapports.export');
+    // « Résultats » (menu Finances) : le rapport financier
+    Route::redirect('/resultats', '/rapports/finances')->middleware('droit:finances.voir')->name('resultats.index');
 
     // Paiements, créances clients et reçus
     Route::middleware('droit:paiements.gerer')->group(function () {

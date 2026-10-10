@@ -56,13 +56,13 @@ class Navigation
                 $e('Créances', 'hand-coins', 'creances.index', '/creances', 'paiements.gerer', false),
                 $e('Dettes fournisseurs', 'banknote', 'dettes.index', '/dettes', ['paiements.gerer', 'achats.voir'], false),
                 $e('Dépenses', 'wallet', 'depenses.index', '/depenses', 'depenses.gerer', false),
-                $e('Résultats', 'chart-line', 'resultats.index', '/resultats', 'finances.voir'),
+                $e('Résultats', 'chart-line', 'resultats.index', '/resultats', 'finances.voir', false),
             ]],
             ['titre' => 'Rapports', 'entrees' => [
-                $e('Ventes', 'chart-column', 'rapports.ventes', '/rapports/ventes', 'rapports.voir'),
-                $e('Achats', 'chart-column', 'rapports.achats', '/rapports/achats', 'rapports.voir'),
-                $e('Stock', 'boxes', 'rapports.stock', '/rapports/stock', 'rapports.voir'),
-                $e('Finances', 'chart-line', 'rapports.finances', '/rapports/finances', 'finances.voir'),
+                $e('Ventes', 'chart-column', 'rapports.ventes', '/rapports/ventes', 'rapports.voir', false),
+                $e('Achats', 'chart-column', 'rapports.achats', '/rapports/achats', 'rapports.voir', false),
+                $e('Stock', 'boxes', 'rapports.stock', '/rapports/stock', 'rapports.voir', false),
+                $e('Finances', 'chart-line', 'rapports.finances', '/rapports/finances', 'finances.voir', false),
             ]],
             ['titre' => 'Administration', 'entrees' => [
                 $e('Utilisateurs', 'users', 'utilisateurs.index', '/utilisateurs', 'utilisateurs.gerer'),
