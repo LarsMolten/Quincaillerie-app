@@ -133,6 +133,21 @@ class NavigationTest extends TestCase
         $this->assertMatchesRegularExpression('/aria-hidden="true">\s*RA\s*<\/span>/', $page);
     }
 
+    public function test_zones_de_la_navigation_partielle(): void
+    {
+        // navigation.js remplace ces zones (contenu et menus) ; le reste de la coquille est conservé
+        $page = $this->actingAs($this->avecRole(Role::ADMINISTRATEUR))->get(route('accueil'))->assertOk()->getContent();
+
+        preg_match_all('/data-zone="([^"]+)"/', $page, $zones);
+        $this->assertSame(['contenu', 'menu-lateral', 'menu-mobile', 'menu-tiroir'], collect($zones[1])->sort()->values()->all());
+        $this->assertStringContainsString('<main id="contenu" data-zone="contenu"', $page);
+        $this->assertStringContainsString('class="indicateur-navigation"', $page);
+
+        // Les pages hors coquille (connexion) n'ont aucune zone : la navigation y reste classique
+        auth()->logout();
+        $this->get(route('connexion'))->assertOk()->assertDontSee('data-zone=', false);
+    }
+
     public function test_initiales_et_prenom(): void
     {
         $utilisateur = new Utilisateur(['nom' => 'Rasoanirina Voahangy']);

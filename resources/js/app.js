@@ -15,6 +15,7 @@ import graphiqueVentes from './composants/graphique-ventes';
 import listeDynamique from './composants/liste-dynamique';
 import menu from './composants/menu';
 import modal from './composants/modal';
+import { installerNavigation } from './composants/navigation';
 import ouvrirPdf from './composants/ouvrir-pdf';
 import recherche from './composants/recherche';
 import reglements from './composants/reglements';
@@ -50,6 +51,9 @@ document.addEventListener('alpine:init', () => {
 
 window.Alpine = Alpine;
 Alpine.start();
+
+// Navigation partielle : seul le contenu de la page change au clic sur un menu ou un lien interne
+installerNavigation();
 
 // PWA : service worker limité aux ressources statiques (jamais les données métier)
 if ('serviceWorker' in navigator && window.isSecureContext) {

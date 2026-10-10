@@ -19,6 +19,9 @@
         Aller au contenu
     </a>
 
+    {{-- Indicateur de chargement de la navigation partielle (resources/js/composants/navigation.js) --}}
+    <div class="indicateur-navigation" aria-hidden="true"></div>
+
     <div x-data="coquille">
         {{-- Barre latérale (grand écran) --}}
         <aside id="barre-laterale"
@@ -30,7 +33,7 @@
                 <span class="truncate text-base font-semibold tracking-tight text-texte lg:barre-repliee:sr-only">{{ config('app.name') }}</span>
             </a>
 
-            <nav aria-label="Navigation principale" class="flex-1 overflow-y-auto px-3 pb-4 pt-2 [scrollbar-color:var(--bordure)_transparent] [scrollbar-width:thin]">
+            <nav aria-label="Navigation principale" data-zone="menu-lateral" class="flex-1 overflow-y-auto px-3 pb-4 pt-2 [scrollbar-color:var(--bordure)_transparent] [scrollbar-width:thin]">
                 @include('layouts.partials.menu-lateral', ['sections' => $sections, 'tiroir' => false])
             </nav>
 
@@ -60,7 +63,7 @@
                     <x-icone nom="x" />
                 </button>
             </div>
-            <nav aria-label="Navigation principale (mobile)" class="overflow-y-auto px-3 py-4">
+            <nav aria-label="Navigation principale (mobile)" data-zone="menu-tiroir" class="overflow-y-auto px-3 py-4">
                 @include('layouts.partials.menu-lateral', ['sections' => $sections, 'tiroir' => true])
             </nav>
         </dialog>
@@ -138,13 +141,13 @@
                 </div>
             </header>
 
-            <main id="contenu" tabindex="-1" class="mx-auto w-full max-w-7xl flex-1 px-4 pb-28 pt-6 focus:outline-none sm:px-page lg:pb-10">
+            <main id="contenu" data-zone="contenu" tabindex="-1" class="mx-auto w-full max-w-7xl flex-1 px-4 pb-28 pt-6 focus:outline-none sm:px-page lg:pb-10">
                 @yield('page')
             </main>
         </div>
 
         {{-- Navigation inférieure (mobile) --}}
-        <nav aria-label="Navigation rapide"
+        <nav aria-label="Navigation rapide" data-zone="menu-mobile"
              class="verre fixed inset-x-0 bottom-0 z-20 border-t border-bordure pb-[env(safe-area-inset-bottom)] lg:hidden">
             <ul class="flex" role="list">
                 @foreach ($navigationMobile as $action)

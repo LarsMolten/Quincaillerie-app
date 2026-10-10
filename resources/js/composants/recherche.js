@@ -1,11 +1,14 @@
 /**
  * Champ de recherche avec raccourci clavier (« / » ou Ctrl+K) qui lui donne le focus.
  * La palette de commandes complète reprendra Ctrl+K plus tard.
+ * L'écouteur clavier est retiré quand le champ disparaît (navigation partielle entre les pages).
  */
 export default function (Alpine) {
     Alpine.data('recherche', () => ({
+        touche: null,
+
         init() {
-            window.addEventListener('keydown', (e) => {
+            this.touche = (e) => {
                 const actif = document.activeElement;
                 const saisieEnCours = ['INPUT', 'TEXTAREA', 'SELECT'].includes(actif?.tagName) || actif?.isContentEditable;
 
@@ -14,7 +17,12 @@ export default function (Alpine) {
                     this.$refs.champ.focus();
                     this.$refs.champ.select();
                 }
-            });
+            };
+            window.addEventListener('keydown', this.touche);
+        },
+
+        destroy() {
+            window.removeEventListener('keydown', this.touche);
         },
     }));
 }

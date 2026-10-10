@@ -353,6 +353,35 @@
     view-transition-name: entete;
 }
 
+/* Barre de chargement de la navigation partielle (affichée après 150 ms : html[data-navigation="chargement"]) */
+.indicateur-navigation {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 60;
+    height: 3px;
+    background: var(--primaire);
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease-out;
+}
+
+[data-navigation='chargement'] .indicateur-navigation {
+    opacity: 1;
+    animation: progression-navigation 8s cubic-bezier(0.1, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes progression-navigation {
+    from {
+        transform: scaleX(0.05);
+    }
+
+    to {
+        transform: scaleX(0.9);
+    }
+}
+
 /* Réduire les animations : tout mouvement est désactivé */
 @media (prefers-reduced-motion: reduce) {
     *,
