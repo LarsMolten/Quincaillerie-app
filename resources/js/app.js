@@ -3,12 +3,14 @@ import ajustementStock from './composants/ajustement-stock';
 import assistantRetour from './composants/assistant-retour';
 import bouton from './composants/bouton';
 import caisse from './composants/caisse';
+import carteDifferee from './composants/carte-differee';
 import comptageInventaire from './composants/comptage-inventaire';
 import coquille from './composants/coquille';
 import depenses from './composants/depenses';
 import factures from './composants/factures';
 import formulaireProduit from './composants/formulaire-produit';
 import graphiqueAnneau from './composants/graphique-anneau';
+import graphiqueVentes from './composants/graphique-ventes';
 import listeDynamique from './composants/liste-dynamique';
 import menu from './composants/menu';
 import modal from './composants/modal';
@@ -40,6 +42,8 @@ document.addEventListener('alpine:init', () => {
     comptageInventaire(Alpine);
     depenses(Alpine);
     graphiqueAnneau(Alpine);
+    graphiqueVentes(Alpine);
+    carteDifferee(Alpine);
 });
 
 window.Alpine = Alpine;

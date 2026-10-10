@@ -16,6 +16,7 @@ use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\PreferenceThemeController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\RetourController;
+use App\Http\Controllers\TableauDeBordController;
 use App\Http\Controllers\UniteController;
 use App\Http\Controllers\VenteController;
 use App\Support\Navigation;
@@ -34,8 +35,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/deconnexion', [ConnexionController::class, 'destroy'])->name('deconnexion');
 
-    // Tableau de bord provisoire (prompt 20)
-    Route::view('/', 'accueil')->name('accueil');
+    // Tableau de bord : page commune à tous les comptes, chaque carte est filtrée par son droit
+    Route::get('/', [TableauDeBordController::class, 'index'])->name('accueil');
+    Route::get('/tableau-de-bord/{carte}', [TableauDeBordController::class, 'carte'])
+        ->whereIn('carte', array_keys(TableauDeBordController::CARTES))->name('tableau-de-bord.carte');
 
     // Préférence personnelle de l'utilisateur connecté : aucun droit particulier requis
     Route::patch('/preferences/theme', PreferenceThemeController::class)->name('preferences.theme');

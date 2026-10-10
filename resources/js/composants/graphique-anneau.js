@@ -6,25 +6,9 @@
  * Utilisation : <div x-data="graphiqueAnneau({ series: [{ libelle, valeur, jeton }], unite: 'Ar' })"><canvas x-ref="canvas"></canvas></div>
  * La légende accessible (liste des valeurs) est rendue côté serveur à côté du canvas.
  */
+import { couleurJeton, observerTheme } from './couleurs-theme.js';
+
 const ariary = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
-const pixel = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-
-/**
- * Couleur d'un jeton convertie en rgb() : Chart.js calcule lui-même les teintes de survol
- * et ne sait pas lire oklch(). Le navigateur peint la couleur sur un pixel, qu'on relit.
- */
-const jeton = (nom) => {
-    const valeur = getComputedStyle(document.documentElement).getPropertyValue(`--${nom}`).trim();
-    if (!pixel || valeur === '') {
-        return valeur;
-    }
-    pixel.clearRect(0, 0, 1, 1);
-    pixel.fillStyle = valeur;
-    pixel.fillRect(0, 0, 1, 1);
-    const [r, g, b] = pixel.getImageData(0, 0, 1, 1).data;
-
-    return `rgb(${r}, ${g}, ${b})`;
-};
 
 export default function (Alpine) {
     Alpine.data('graphiqueAnneau', ({ series, unite = 'Ar' }) => {
@@ -37,8 +21,8 @@ export default function (Alpine) {
                 return;
             }
             const jeu = graphique.data.datasets[0];
-            jeu.backgroundColor = series.map((s) => jeton(s.jeton));
-            jeu.borderColor = jeton('surface');
+            jeu.backgroundColor = series.map((s) => couleurJeton(s.jeton));
+            jeu.borderColor = couleurJeton('surface');
             graphique.update('none');
         };
 
@@ -47,7 +31,7 @@ export default function (Alpine) {
                 if (series.length === 0) {
                     return;
                 }
-                const { Chart } = await import('./anneau-chart.js');
+                const { Chart } = await import('./graphiques-chart.js');
                 const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
                 graphique = new Chart(this.$refs.canvas, {
@@ -68,10 +52,7 @@ export default function (Alpine) {
                     },
                 });
                 colorer();
-
-                // Mode clair / sombre : la classe « dark » change sur <html>
-                observateur = new MutationObserver(colorer);
-                observateur.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+                observateur = observerTheme(colorer);
             },
 
             destroy() {

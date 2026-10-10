@@ -19,7 +19,7 @@ class AccueilTest extends TestCase
             ->assertOk()
             ->assertSee('Bonjour, Hery')
             ->assertSee('lang="fr"', false)
-            ->assertSee("35\u{00A0}000\u{00A0}Ar");
+            ->assertSee(ucfirst(now()->translatedFormat('l j F Y')));
     }
 
     public function test_la_configuration_regionale_est_appliquee(): void
